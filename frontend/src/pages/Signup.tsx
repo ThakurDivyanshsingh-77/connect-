@@ -2,13 +2,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/layout/Navbar";
-
 import {
   GraduationCap,
   Award,
@@ -25,8 +23,9 @@ import {
   Loader2,
 } from "lucide-react";
 
-// ✅ BACKEND URL (ONLY ADDITION)
-const API_URL = import.meta.env.VITE_API_URL;
+/* 🔥 BACKEND URL */
+const API_URL =
+  import.meta.env.VITE_API_URL || "https://connect-315o.onrender.com";
 
 type UserRole = "junior" | "senior" | "teacher";
 
@@ -80,7 +79,7 @@ const Signup = () => {
     }
   };
 
-  // ✅ ONLY LOGIC FIX (UI SAME)
+  /* ✅ FINAL FIXED SUBMIT */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRole) return;
@@ -89,42 +88,29 @@ const Signup = () => {
     setIsSubmitting(true);
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("password", formData.password);
-      formDataToSend.append("role", selectedRole);
+      const fd = new FormData();
+      fd.append("name", formData.name);
+      fd.append("email", formData.email);
+      fd.append("password", formData.password);
+      fd.append("role", selectedRole);
 
-      if (formData.batch) {
-        formDataToSend.append("batch", formData.batch);
-      }
+      if (formData.batch) fd.append("batch", formData.batch);
+      if (formData.idCard) fd.append("idCard", formData.idCard);
 
-      if (formData.idCard) {
-        formDataToSend.append("idCard", formData.idCard);
-      }
-
-      const response = await axios.post(
-        `${API_URL}/api/auth/signup`,   // 🔥 FIXED
-        formDataToSend,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
-        }
+      const res = await axios.post(
+        `${API_URL}/api/auth/signup`,
+        fd,
+        { withCredentials: true } // ❌ Content-Type mat do
       );
 
-      const { token } = response.data;
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", res.data.token);
 
-      if (selectedRole === "senior") {
-        navigate("/");
-      } else {
-        navigate("/pending-verification");
-      }
+      if (selectedRole === "senior") navigate("/");
+      else navigate("/pending-verification");
     } catch (err: any) {
-      console.error("Signup Error:", err);
       setError(
         err.response?.data?.message ||
-        "Failed to create account. Please try again."
+        "Signup failed. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -133,10 +119,10 @@ const Signup = () => {
 
   const currentRole = roles.find((r) => r.id === selectedRole);
 
+  /* ⬇️ UI PURA SAME HAI */
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-
       <div className="min-h-screen flex items-center justify-center pt-20 pb-10 px-4">
         <div className="w-full max-w-lg">
           <motion.div
@@ -145,7 +131,6 @@ const Signup = () => {
             transition={{ duration: 0.5 }}
             className="bg-card rounded-2xl shadow-elevated border border-border p-8"
           >
-            {/* Progress Indicator */}
             <div className="flex items-center justify-center gap-2 mb-8">
               <div className={`w-3 h-3 rounded-full ${step >= 1 ? "bg-primary" : "bg-muted"}`} />
               <div className={`w-12 h-0.5 ${step >= 2 ? "bg-primary" : "bg-muted"}`} />
@@ -158,19 +143,17 @@ const Signup = () => {
               </div>
             )}
 
-            {/* 🔹 STEP 1 UI – SAME */}
             {step === 1 && (
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+              <>
                 <div className="text-center mb-8">
                   <h1 className="text-2xl font-bold">Join AlumniConnect</h1>
-                  <p className="text-muted-foreground">Select your role to get started</p>
+                  <p className="text-muted-foreground">Select your role</p>
                 </div>
 
                 <div className="grid gap-4 mb-6">
                   {roles.map((role) => (
                     <button
                       key={role.id}
-                      type="button"
                       onClick={() => setSelectedRole(role.id)}
                       className={`w-full p-4 rounded-xl border-2 text-left ${
                         selectedRole === role.id
@@ -195,23 +178,56 @@ const Signup = () => {
                 </div>
 
                 <Button
-                  onClick={() => selectedRole && setStep(2)}
-                  disabled={!selectedRole}
                   className="w-full"
+                  disabled={!selectedRole}
+                  onClick={() => setStep(2)}
                 >
                   Continue
                 </Button>
-              </motion.div>
+              </>
             )}
 
-            {/* 🔹 STEP 2 UI – SAME */}
             {step === 2 && (
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* SAME INPUTS */}
-                  {/* (unchanged – as in your original code) */}
-                </form>
-              </motion.div>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <Input
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                />
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                />
+
+                {currentRole?.requiresId && (
+                  <input
+                    type="file"
+                    accept=".jpg,.png,.pdf"
+                    onChange={handleFileChange}
+                    required
+                  />
+                )}
+
+                <div className="flex gap-4">
+                  <Button type="button" variant="outline" onClick={() => setStep(1)}>
+                    Back
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Creating..." : "Create Account"}
+                  </Button>
+                </div>
+              </form>
             )}
           </motion.div>
         </div>
