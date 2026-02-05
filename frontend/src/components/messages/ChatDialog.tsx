@@ -73,7 +73,7 @@ export function ChatDialog({
             <Avatar className="h-9 w-9 border border-border">
               {/* FIXED: Handle Localhost Image URL */}
               <AvatarImage 
-                src={partnerAvatar ? (partnerAvatar.startsWith('http') ? partnerAvatar : `http://localhost:5000/${partnerAvatar}`) : undefined} 
+                src={partnerAvatar ? (partnerAvatar.startsWith('http') ? partnerAvatar : `https://connect-315o.onrender.com/${partnerAvatar}`) : undefined} 
               />
               <AvatarFallback className="bg-primary/10 text-primary">
                 {partnerName?.charAt(0).toUpperCase()}

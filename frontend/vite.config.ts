@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
     // --- PROXY ADDED FOR BACKEND CONNECTION ---
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // Backend ka address
+        target: 'https://connect-315o.onrender.com', // Backend ka address
         changeOrigin: true,
         secure: false,
       },

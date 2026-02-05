@@ -1,5 +1,5 @@
 // client/src/utils/config.ts
-export const API_URL = "http://localhost:5000";
+export const API_URL = "https://connect-315o.onrender.com";
 
 export const getImageUrl = (path: string | null | undefined) => {
   if (!path) return undefined;
