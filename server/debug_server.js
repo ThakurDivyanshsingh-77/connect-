@@ -11,7 +11,7 @@ app.use(express.json());
 
 // CORS: Frontend ko permission do
 app.use(cors({
-  origin: "http://localhost:8080",
+  origin: "https://connect-1-jq2k.onrender.com",
   credentials: true
 }));
 

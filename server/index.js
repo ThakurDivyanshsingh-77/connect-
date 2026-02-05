@@ -21,13 +21,13 @@ const server = http.createServer(app);
 // 4. Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:8080", // Frontend URL
+    origin: "https://connect-1-jq2k.onrender.com", // Frontend URL
     methods: ["GET", "POST"]
   }
 });
 
 app.use(cors({
-  origin: "http://localhost:8080",
+  origin: "https://connect-1-jq2k.onrender.com",
   credentials: true
 }));
 
