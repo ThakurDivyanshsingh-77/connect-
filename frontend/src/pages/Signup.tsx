@@ -20,10 +20,9 @@ import {
   Upload,
   CheckCircle2,
   AlertCircle,
-  Loader2,
+  Loader2
 } from "lucide-react";
 
-/* 🔥 BACKEND URL */
 const API_URL =
   import.meta.env.VITE_API_URL || "https://connect-315o.onrender.com";
 
@@ -79,7 +78,6 @@ const Signup = () => {
     }
   };
 
-  /* ✅ FINAL FIXED SUBMIT */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRole) return;
@@ -88,29 +86,43 @@ const Signup = () => {
     setIsSubmitting(true);
 
     try {
-      const fd = new FormData();
-      fd.append("name", formData.name);
-      fd.append("email", formData.email);
-      fd.append("password", formData.password);
-      fd.append("role", selectedRole);
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("password", formData.password);
+      formDataToSend.append("role", selectedRole);
 
-      if (formData.batch) fd.append("batch", formData.batch);
-      if (formData.idCard) fd.append("idCard", formData.idCard);
+      if (formData.batch) {
+        formDataToSend.append("batch", formData.batch);
+      }
 
-      const res = await axios.post(
+      if (formData.idCard) {
+        formDataToSend.append("idCard", formData.idCard);
+      }
+
+      const response = await axios.post(
         `${API_URL}/api/auth/signup`,
-        fd,
-        { withCredentials: true } // ❌ Content-Type mat do
+        formDataToSend,
+        {
+          withCredentials: true,
+        }
       );
 
-      localStorage.setItem("token", res.data.token);
+      const { token } = response.data;
 
-      if (selectedRole === "senior") navigate("/");
-      else navigate("/pending-verification");
+      localStorage.setItem("token", token);
+
+      if (selectedRole === "senior") {
+        navigate("/");
+      } else {
+        navigate("/pending-verification");
+      }
+
     } catch (err: any) {
+      console.error("Signup Error:", err);
       setError(
         err.response?.data?.message ||
-        "Signup failed. Please try again."
+        "Failed to create account. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -119,7 +131,6 @@ const Signup = () => {
 
   const currentRole = roles.find((r) => r.id === selectedRole);
 
-  /* ⬇️ UI PURA SAME HAI */
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -144,90 +155,238 @@ const Signup = () => {
             )}
 
             {step === 1 && (
-              <>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
                 <div className="text-center mb-8">
-                  <h1 className="text-2xl font-bold">Join AlumniConnect</h1>
-                  <p className="text-muted-foreground">Select your role</p>
+                  <h1 className="text-2xl font-bold text-foreground mb-2">
+                    Join AlumniConnect
+                  </h1>
+                  <p className="text-muted-foreground">
+                    Select your role to get started
+                  </p>
                 </div>
 
                 <div className="grid gap-4 mb-6">
                   {roles.map((role) => (
                     <button
                       key={role.id}
+                      type="button"
                       onClick={() => setSelectedRole(role.id)}
-                      className={`w-full p-4 rounded-xl border-2 text-left ${
+                      className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
                         selectedRole === role.id
                           ? "border-primary bg-primary/5"
-                          : "border-border"
+                          : "border-border hover:border-muted-foreground/30"
                       }`}
                     >
                       <div className="flex items-center gap-4">
-                        <role.icon className="w-6 h-6" />
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                          <role.icon className="w-6 h-6 text-primary" />
+                        </div>
+
                         <div className="flex-1">
-                          <span className="font-semibold">{role.title}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-foreground">
+                              {role.title}
+                            </span>
+                            <Badge className="text-xs">
+                              {role.subtitle}
+                            </Badge>
+                          </div>
+
                           <p className="text-sm text-muted-foreground">
-                            {role.subtitle}
+                            {role.description}
                           </p>
                         </div>
+
                         {selectedRole === role.id && (
                           <CheckCircle2 className="w-6 h-6 text-primary" />
                         )}
                       </div>
+
+                      {role.requiresId && (
+                        <div className="mt-3 flex items-center gap-2 text-xs text-warning">
+                          <AlertCircle className="w-4 h-4" />
+                          ID verification required
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
 
                 <Button
-                  className="w-full"
+                  onClick={() => selectedRole && setStep(2)}
                   disabled={!selectedRole}
-                  onClick={() => setStep(2)}
+                  className="w-full h-12"
+                  size="lg"
                 >
                   Continue
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-              </>
+
+                <p className="mt-6 text-center text-sm text-muted-foreground">
+                  Already have an account?{" "}
+                  <Link to="/login" className="text-primary font-medium hover:underline">
+                    Sign in
+                  </Link>
+                </p>
+              </motion.div>
             )}
 
             {step === 2 && (
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <Input
-                  placeholder="Full Name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                />
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                />
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+              >
+                <form onSubmit={handleSubmit} className="space-y-5">
 
-                {currentRole?.requiresId && (
-                  <input
-                    type="file"
-                    accept=".jpg,.png,.pdf"
-                    onChange={handleFileChange}
-                    required
-                  />
-                )}
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        className="pl-10 h-12"
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
 
-                <div className="flex gap-4">
-                  <Button type="button" variant="outline" onClick={() => setStep(1)}>
-                    Back
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Creating..." : "Create Account"}
-                  </Button>
-                </div>
-              </form>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="Enter your email"
+                        className="pl-10 h-12"
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="batch">Batch / Year</Label>
+                    <Input
+                      id="batch"
+                      type="text"
+                      placeholder="e.g., 2024"
+                      className="h-12"
+                      value={formData.batch}
+                      onChange={(e) =>
+                        setFormData({ ...formData, batch: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Create a password"
+                        className="pl-10 pr-10 h-12"
+                        value={formData.password}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
+                        required
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {currentRole?.requiresId && (
+                    <div className="space-y-2">
+                      <Label htmlFor="idCard">Upload ID Card *</Label>
+
+                      <label
+                        htmlFor="idCard"
+                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer"
+                      >
+                        {formData.idCard ? (
+                          <div className="flex items-center gap-2 text-primary">
+                            <CheckCircle2 className="w-5 h-5" />
+                            <span>{formData.idCard.name}</span>
+                          </div>
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                            <span className="text-sm text-muted-foreground">
+                              Click to upload ID card
+                            </span>
+                          </>
+                        )}
+                      </label>
+
+                      <input
+                        id="idCard"
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        className="hidden"
+                        onChange={handleFileChange}
+                        required
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setStep(1)}
+                      className="flex-1 h-12"
+                    >
+                      Back
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      className="flex-1 h-12"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        <>
+                          Create Account
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                </form>
+              </motion.div>
             )}
           </motion.div>
         </div>
