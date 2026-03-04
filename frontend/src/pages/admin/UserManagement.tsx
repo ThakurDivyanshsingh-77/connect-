@@ -49,11 +49,13 @@ export default function UserManagement() {
 
   // 2. Filter Logic
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const name = (user?.name || "").toString();
+    const email = (user?.email || "").toString();
+    const q = (searchQuery || "").toLowerCase();
+    const matchesSearch = name.toLowerCase().includes(q) || email.toLowerCase().includes(q);
     
     // Normalize roles for filtering (e.g. 'student' matches 'junior')
-    let normalizedRole = user.role?.toLowerCase();
+    let normalizedRole = (user?.role || "").toLowerCase();
     if (normalizedRole === 'student') normalizedRole = 'junior';
     if (normalizedRole === 'alumni') normalizedRole = 'senior';
 
@@ -63,10 +65,10 @@ export default function UserManagement() {
 
   // Calculate Counts
   const roleCounts = {
-    junior: users.filter(u => ['junior', 'student'].includes(u.role?.toLowerCase())).length,
-    senior: users.filter(u => ['senior', 'alumni'].includes(u.role?.toLowerCase())).length,
-    teacher: users.filter(u => u.role?.toLowerCase() === 'teacher').length,
-    admin: users.filter(u => u.role?.toLowerCase() === 'admin').length,
+    junior: users.filter(u => ['junior', 'student'].includes((u.role || '').toLowerCase())).length,
+    senior: users.filter(u => ['senior', 'alumni'].includes((u.role || '').toLowerCase())).length,
+    teacher: users.filter(u => (u.role || '').toLowerCase() === 'teacher').length,
+    admin: users.filter(u => (u.role || '').toLowerCase() === 'admin').length,
   };
 
   // 3. Actions
@@ -113,8 +115,8 @@ export default function UserManagement() {
   };
 
   // Helper for Badge Colors
-  const getRoleBadgeStyle = (role: string) => {
-    const r = role?.toLowerCase() || "";
+  const getRoleBadgeStyle = (role?: string) => {
+    const r = (role || "").toLowerCase();
     if (['admin'].includes(r)) return "bg-red-100 text-red-700 border-red-200 hover:bg-red-200";
     if (['teacher'].includes(r)) return "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200";
     if (['senior', 'alumni'].includes(r)) return "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200";
