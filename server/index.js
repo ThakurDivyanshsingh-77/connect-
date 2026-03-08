@@ -21,13 +21,13 @@ const server = http.createServer(app);
 // 4. Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "https://connect-1-jq2k.onrender.com", // Frontend URL
+    origin: "https://connect-alpha-green.vercel.app", // Frontend URL
     methods: ["GET", "POST"]
   }
 });
 
 app.use(cors({
-  origin: "https://connect-1-jq2k.onrender.com",
+  origin: "https://connect-alpha-green.vercel.app",
   credentials: true
 }));
 
