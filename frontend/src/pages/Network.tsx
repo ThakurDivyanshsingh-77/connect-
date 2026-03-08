@@ -206,7 +206,7 @@ const Network = () => {
             className="mb-8"
           >
             <h1 className="text-3xl font-bold text-foreground mb-2">
-              Explore Network
+              Alumni Network
             </h1>
             <p className="text-muted-foreground">
               Connect with alumni, students, and faculty from your college
@@ -226,7 +226,7 @@ const Network = () => {
                 <Input
                   type="text"
                   placeholder="Search by name, company, or skills..."
-                  className="pl-10 h-12"
+                  className="pl-10 pr-4 py-3 h-12 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -265,7 +265,7 @@ const Network = () => {
 
           {/* Loading State */}
           {loading && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="bg-card rounded-xl border border-border p-6 space-y-4">
                   <div className="flex items-start gap-4">
@@ -288,7 +288,7 @@ const Network = () => {
 
           {/* User Grid */}
           {!loading && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredUsers.map((networkUser, index) => {
                 const RoleIcon = roleIcons[networkUser.role as keyof typeof roleIcons] || Award;
                 return (
@@ -297,7 +297,7 @@ const Network = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
-                    className={`bg-card rounded-xl border p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ${
+                    className={`bg-card rounded-xl border p-6 hover:shadow-lg hover:-translate-y-1 hover:scale-105 transition-all duration-300 ${
                       networkUser.role === 'junior' ? 'border-blue-100 hover:border-blue-300 dark:border-blue-900/30' :
                       networkUser.role === 'senior' ? 'border-purple-100 hover:border-purple-300 dark:border-purple-900/30' :
                       networkUser.role === 'teacher' ? 'border-orange-100 hover:border-orange-300 dark:border-orange-900/30' :
@@ -373,12 +373,9 @@ const Network = () => {
                       {networkUser.skills && networkUser.skills.length > 0 ? (
                         <>
                           {networkUser.skills.slice(0, 3).map((skill) => (
-                            <span
-                              key={skill}
-                              className="px-2 py-1 bg-secondary rounded-md text-xs text-secondary-foreground"
-                            >
+                            <Badge key={skill} variant="outline" className="capitalize text-xs">
                               {skill}
-                            </span>
+                            </Badge>
                           ))}
                           {networkUser.skills.length > 3 && (
                             <span className="px-2 py-1 text-xs text-muted-foreground">
