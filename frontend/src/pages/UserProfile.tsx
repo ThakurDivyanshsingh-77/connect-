@@ -66,10 +66,12 @@ const UserProfile = () => {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<"none" | "pending" | "connected" | "received">("none");
+  const [mentorshipStatus, setMentorshipStatus] = useState<"none" | "pending" | "active" | "other">("none");
+  const [mentorshipLoading, setMentorshipLoading] = useState(false);
 
   const getFileUrl = (path: string) => {
     if (!path) return "";
-    return path.startsWith("http") ? path : `${API_URL}/${path.replace(/\\/g, "/")}`;
+    return path;
   };
 
   useEffect(() => {
@@ -82,12 +84,14 @@ const UserProfile = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
+        const myId = currentUser?.id || (currentUser as any)?._id;
         
         // 1. Fetch Profile
         const profileRes = await axios.get(`${API_URL}/api/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setProfile(profileRes.data);
+        const nextProfile = profileRes.data as UserProfileData;
+        setProfile(nextProfile);
 
         // 2. Fetch Certificates
         const certsRes = await axios.get(`${API_URL}/api/users/certificates/${userId}`, {
@@ -115,6 +119,32 @@ const UserProfile = () => {
             setConnectionStatus('none');
         }
 
+        // 4. Check Mentorship state (junior -> teacher only)
+        if (token && myId && nextProfile?.role === "teacher" && (currentUser as any)?.role === "junior") {
+          try {
+            const mentorshipRes = await axios.get(`${API_URL}/api/mentorships/my`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            const mentorship = mentorshipRes.data?.mentorship;
+            if (!mentorship) {
+              setMentorshipStatus("none");
+            } else if ((mentorship.mentor?._id || mentorship.mentor) === nextProfile._id) {
+              if (mentorship.status === "pending") setMentorshipStatus("pending");
+              else if (mentorship.status === "active") setMentorshipStatus("active");
+              else setMentorshipStatus("none");
+            } else if (mentorship.status === "pending" || mentorship.status === "active") {
+              // User has mentorship with another teacher
+              setMentorshipStatus("other");
+            } else {
+              setMentorshipStatus("none");
+            }
+          } catch (error) {
+            setMentorshipStatus("none");
+          }
+        } else {
+          setMentorshipStatus("none");
+        }
+
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -139,8 +169,29 @@ const UserProfile = () => {
     }
   };
 
+  const handleRequestMentorship = async () => {
+    if (!profile?._id) return;
+    try {
+      setMentorshipLoading(true);
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${API_URL}/api/mentorships/request`,
+        { mentorId: profile._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMentorshipStatus("pending");
+      toast({ title: "Request sent", description: "Mentorship request sent to the teacher." });
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Failed to send mentorship request";
+      toast({ variant: "destructive", title: "Error", description: message });
+    } finally {
+      setMentorshipLoading(false);
+    }
+  };
+
   const isOwnProfile = (currentUser?.id === userId) || ((currentUser as any)?._id === userId);
   const RoleIcon = profile ? roleIcons[profile.role] : GraduationCap;
+  const isJuniorViewingTeacher = !isOwnProfile && profile?.role === "teacher" && (currentUser as any)?.role === "junior";
 
   if (loading) {
     return (
@@ -243,6 +294,25 @@ const UserProfile = () => {
                             </Link>
                         ) : (
                             <>
+                                {isJuniorViewingTeacher && (
+                                  mentorshipStatus === "active" ? (
+                                    <Button variant="outline" className="text-emerald-700 border-emerald-200 bg-emerald-50" disabled>
+                                      Mentorship Active
+                                    </Button>
+                                  ) : mentorshipStatus === "pending" ? (
+                                    <Button variant="secondary" disabled>
+                                      Mentorship Pending
+                                    </Button>
+                                  ) : mentorshipStatus === "other" ? (
+                                    <Button variant="secondary" disabled title="You already have an active/pending mentorship with another teacher.">
+                                      Mentorship Unavailable
+                                    </Button>
+                                  ) : (
+                                    <Button onClick={handleRequestMentorship} disabled={mentorshipLoading}>
+                                      Request Mentorship
+                                    </Button>
+                                  )
+                                )}
                                 {connectionStatus === "connected" ? (
                                     <Button variant="outline" className="text-green-600 border-green-200 bg-green-50" disabled>
                                         <Check className="w-4 h-4 mr-2" /> Connected

@@ -25,7 +25,7 @@ export const ViewAttendeesDialog = ({ eventId }: ViewAttendeesDialogProps) => {
   const getAvatar = (path?: string) => {
     if (!path) return undefined;
     const cleanPath = path.replace(/\\/g, "/");
-    return cleanPath.startsWith("http") ? cleanPath : `${API_URL}/${cleanPath}`;
+    return cleanPath;
   };
 
   const fetchAttendees = async () => {

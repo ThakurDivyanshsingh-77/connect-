@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 export const SeniorDashboard = () => {
-  const { profile, user } = useAuth();
+  const { user } = useAuth();
   const { jobs } = useJobs();
   const { events } = useEvents();
   const { users } = useNetwork();
@@ -78,7 +78,7 @@ export const SeniorDashboard = () => {
             <Badge variant="senior" className="text-sm font-medium">Alumni Dashboard</Badge>
           </div>
           <h1 className="text-3xl font-bold mb-2">
-            Welcome, {profile?.full_name?.split(" ")[0]}! 🌟
+            Welcome, {user?.name?.split(" ")[0] || "User"}! 🌟
           </h1>
           <p className="text-white/80 max-w-xl">
             Help shape the future! Post job opportunities, mentor students, and stay connected with your alma mater.

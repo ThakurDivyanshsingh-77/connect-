@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Job = require('../models/Job');
 const Event = require('../models/Event');
 const Certificate = require('../models/Certificate');
+const { createNotification } = require('../utils/notificationService');
 
 // 1. GET ADMIN STATS (Dashboard)
 exports.getStats = async (req, res) => {
@@ -79,6 +80,21 @@ exports.verifyUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    await createNotification({
+      io: req.app.get('io'),
+      recipient: user._id,
+      sender: req.user.id,
+      type: 'verification_status',
+      title: `Verification ${status}`,
+      message: status === 'approved'
+        ? 'Your account has been verified. You now have full access.'
+        : 'Your verification was rejected. Please contact the admin team.',
+      link: status === 'approved' ? '/dashboard' : '/pending-verification',
+      metadata: {
+        status,
+      },
+    });
 
     res.json({ message: `User ${status} successfully`, user });
   } catch (error) {

@@ -85,8 +85,15 @@ exports.uploadAvatar = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
+    const cloudinary = require('../config/cloudinary');
+    const user = await User.findById(req.user.id);
+    if (user && user.avatar_public_id) {
+       await cloudinary.uploader.destroy(user.avatar_public_id);
+    }
+
     const updatedUser = await User.findByIdAndUpdate(req.user.id, {
-      avatar_url: req.file.path
+      avatar_url: req.file.path,
+      avatar_public_id: req.file.filename
     }, { new: true }).select('-password');
 
     res.json(updatedUser);
@@ -130,7 +137,8 @@ exports.addCertificate = async (req, res) => {
       category,
       issuing_organization,
       issue_date,
-      file_url: req.file.path
+      file_url: req.file.path,
+      file_public_id: req.file.filename
     });
 
     await newCertificate.save();
@@ -170,6 +178,11 @@ exports.deleteCertificate = async (req, res) => {
 
     if (certificate.user.toString() !== req.user.id) {
       return res.status(401).json({ message: "Not authorized" });
+    }
+
+    if (certificate.file_public_id) {
+        const cloudinary = require('../config/cloudinary');
+        await cloudinary.uploader.destroy(certificate.file_public_id);
     }
 
     await certificate.deleteOne();

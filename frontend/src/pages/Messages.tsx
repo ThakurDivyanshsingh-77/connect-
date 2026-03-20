@@ -8,7 +8,10 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area"; // Sidebar ke liye rakhein
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, MessageSquare, ArrowLeft, Loader2, Paperclip, Smile, Phone, Video, X, FileText } from "lucide-react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Send, MessageSquare, ArrowLeft, Loader2, Paperclip, Smile, Phone, Video, X, FileText, NotebookPen } from "lucide-react";
 import { format, isToday, isYesterday } from "date-fns";
 import { Link } from "react-router-dom";
 import { API_URL } from "@/utils/config";
@@ -16,7 +19,8 @@ import EmojiPicker from "emoji-picker-react";
 import axios from "axios"; 
 
 export default function Messages() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const { toast } = useToast();
   const [selectedPartner, setSelectedPartner] = useState<{
     id: string;
     name: string;
@@ -35,6 +39,10 @@ export default function Messages() {
   const [sending, setSending] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null); 
+  const [activeMentorshipId, setActiveMentorshipId] = useState<string | null>(null);
+  const [sessionDialogOpen, setSessionDialogOpen] = useState(false);
+  const [sessionSummary, setSessionSummary] = useState("");
+  const [sessionSaving, setSessionSaving] = useState(false);
   
   // 👇 FIX 1: Ref ab Container par lagega (HTMLDivElement)
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -43,6 +51,28 @@ export default function Messages() {
     if (selectedPartner) refreshMessages();
     refreshConversations();
   }, [selectedPartner]);
+
+  useEffect(() => {
+    const resolveMentorship = async () => {
+      setActiveMentorshipId(null);
+      if (!selectedPartner) return;
+      if (role !== "teacher") return;
+
+      try {
+        const token = localStorage.getItem("token");
+        const { data } = await axios.get(`${API_URL}/api/mentorships/mentees`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const mentees = data.mentees || [];
+        const match = mentees.find((m: any) => (m.mentee?._id || m.mentee) === selectedPartner.id);
+        if (match?._id) setActiveMentorshipId(match._id);
+      } catch (e) {
+        setActiveMentorshipId(null);
+      }
+    };
+
+    void resolveMentorship();
+  }, [role, selectedPartner]);
 
   // 👇 FIX 2: Better Auto Scroll Logic (Window scroll nahi karega)
   useEffect(() => {
@@ -104,6 +134,29 @@ export default function Messages() {
     setSending(false);
   };
 
+  const handleCreateSession = async () => {
+    if (!activeMentorshipId) return;
+    if (!sessionSummary.trim()) return;
+
+    try {
+      setSessionSaving(true);
+      const token = localStorage.getItem("token");
+      const linkedMessageIds = messages.slice(-10).map((m) => m._id);
+      await axios.post(
+        `${API_URL}/api/mentorships/${activeMentorshipId}/sessions`,
+        { summary: sessionSummary.trim(), linkedMessageIds },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSessionSummary("");
+      setSessionDialogOpen(false);
+      toast({ title: "Session added", description: "Saved to mentorship session history." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error?.response?.data?.message || "Failed to add session" });
+    } finally {
+      setSessionSaving(false);
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -129,11 +182,11 @@ export default function Messages() {
 
   const getAvatarUrl = (url: string | null) => {
     if (!url) return undefined;
-    return url.startsWith("http") ? url : `${API_URL}/${url}`;
+    return url;
   };
 
   const getFileUrl = (path: string) => {
-    return path.startsWith("http") ? path : `${API_URL}/${path}`;
+    return path;
   };
 
   if (!user) {
@@ -223,6 +276,38 @@ export default function Messages() {
                         </div>
                     </div>
                     <div className="flex gap-1">
+                        {activeMentorshipId && (
+                          <Dialog open={sessionDialogOpen} onOpenChange={setSessionDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="icon" title="Add mentorship session">
+                                <NotebookPen className="w-5 h-5 text-muted-foreground" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Add mentorship session</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-2">
+                                <p className="text-sm text-muted-foreground">
+                                  Save a short session summary. We’ll link the latest messages automatically.
+                                </p>
+                                <Textarea
+                                  value={sessionSummary}
+                                  onChange={(e) => setSessionSummary(e.target.value)}
+                                  placeholder="What did you discuss? Next steps?"
+                                />
+                              </div>
+                              <DialogFooter>
+                                <Button variant="outline" onClick={() => setSessionDialogOpen(false)} disabled={sessionSaving}>
+                                  Cancel
+                                </Button>
+                                <Button onClick={handleCreateSession} disabled={sessionSaving || !sessionSummary.trim()}>
+                                  {sessionSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save session"}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        )}
                         <Button variant="ghost" size="icon" title="Voice Call">
                             <Phone className="w-5 h-5 text-muted-foreground" />
                         </Button>

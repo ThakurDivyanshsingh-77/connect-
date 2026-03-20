@@ -29,8 +29,10 @@ exports.signup = async (req, res) => {
 
     // 3️⃣ Handle ID card upload (multer)
     let idCardUrl = null;
+    let idCardPublicId = null;
     if (req.file) {
-      idCardUrl = req.file.path; // uploads/filename.ext
+      idCardUrl = req.file.path; 
+      idCardPublicId = req.file.filename;
     }
 
     // 4️⃣ Verification logic
@@ -60,6 +62,7 @@ exports.signup = async (req, res) => {
       batch: batch || null,
       company: company || null,
       idCardUrl,
+      idCard_public_id: idCardPublicId,
       verificationStatus,
       isVerified,
     });

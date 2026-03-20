@@ -1,5 +1,7 @@
 const Event = require('../models/Event');
 const User = require('../models/User'); // 1. User Model Import (Points ke liye)
+const Room = require('../models/Room'); // Import Room Model
+
 
 // 1. Create Event (With Image Upload)
 exports.createEvent = async (req, res) => {
@@ -8,8 +10,10 @@ exports.createEvent = async (req, res) => {
 
     // Check if file was uploaded
     let imageUrl = '';
+    let imagePublicId = '';
     if (req.file) {
       imageUrl = req.file.path; 
+      imagePublicId = req.file.filename;
     }
 
     const newEvent = new Event({
@@ -21,10 +25,25 @@ exports.createEvent = async (req, res) => {
       type,
       max_participants: max_participants ? parseInt(max_participants) : null,
       image: imageUrl,
+      image_public_id: imagePublicId,
       organizer: req.user.id
     });
 
     await newEvent.save();
+
+    // Auto-create a Room for this Event
+    const newRoom = new Room({
+      name: `${title} - Discussion`,
+      description: `Official discussion room for ${title}`,
+      type: 'event',
+      createdBy: req.user.id,
+      admins: [req.user.id],
+      members: [req.user.id],
+      isPrivate: false,
+      eventId: newEvent._id
+    });
+    await newRoom.save();
+
     res.status(201).json(newEvent);
   } catch (error) {
     console.error(error);
@@ -106,6 +125,11 @@ exports.deleteEvent = async (req, res) => {
 
     if (event.organizer.toString() !== req.user.id) {
       return res.status(401).json({ message: "Not authorized" });
+    }
+
+    if (event.image_public_id) {
+        const cloudinary = require('../config/cloudinary');
+        await cloudinary.uploader.destroy(event.image_public_id);
     }
 
     await event.deleteOne();

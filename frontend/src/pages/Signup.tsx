@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "@/utils/config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,9 +23,6 @@ import {
   AlertCircle,
   Loader2
 } from "lucide-react";
-
-const API_URL =
-  import.meta.env.VITE_API_URL || "https://connect-315o.onrender.com";
 
 type UserRole = "junior" | "senior" | "teacher";
 

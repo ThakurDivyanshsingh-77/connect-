@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from './useAuth';
+import { API_URL, getImageUrl } from '@/utils/config';
 
 export interface NetworkUser {
   id: string;
@@ -35,8 +36,8 @@ export function useNetwork() {
 
       // 1. Fetch Users AND Connections simultaneously
       const [usersRes, connectionsRes] = await Promise.all([
-        axios.get('https://connect-315o.onrender.com/api/users', config),
-        axios.get('https://connect-315o.onrender.com/api/connections', config) // Backend Route created previously
+        axios.get(`${API_URL}/api/users`, config),
+        axios.get(`${API_URL}/api/connections`, config)
       ]);
 
       const allUsers = usersRes.data;
@@ -70,9 +71,7 @@ export function useNetwork() {
         role: u.role,
         company: u.company || '',
         designation: u.designation || '',
-        avatar_url: u.avatar_url 
-          ? (u.avatar_url.startsWith('http') ? u.avatar_url : `https://connect-315o.onrender.com${u.avatar_url}`) 
-          : null,
+        avatar_url: getImageUrl(u.avatar_url) || null,
         skills: u.skills || [],
         bio: u.bio || '',
         batch: u.batch || '',
@@ -102,7 +101,7 @@ export function useNetwork() {
   const sendConnectionRequest = async (recipientId: string) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://connect-315o.onrender.com/api/connections/request', 
+      await axios.post(`${API_URL}/api/connections/request`, 
         { recipientId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -123,7 +122,7 @@ export function useNetwork() {
   const acceptConnectionRequest = async (connectionId: string) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://connect-315o.onrender.com/api/connections/respond', 
+      await axios.post(`${API_URL}/api/connections/respond`, 
         { connectionId, status: 'accepted' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -140,7 +139,7 @@ export function useNetwork() {
   const rejectConnectionRequest = async (connectionId: string) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://connect-315o.onrender.com/api/connections/respond', 
+      await axios.post(`${API_URL}/api/connections/respond`, 
         { connectionId, status: 'rejected' },
         { headers: { Authorization: `Bearer ${token}` } }
       );

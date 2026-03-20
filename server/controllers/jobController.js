@@ -1,5 +1,6 @@
 const Job = require('../models/Job');
-const User = require('../models/User'); // 1. User Model Import kiya (Points ke liye)
+const User = require('../models/User');
+const { createNotification } = require('../utils/notificationService');
 
 // 1. Post a new Job (Only Seniors/Alumni/Admin)
 exports.postJob = async (req, res) => {
@@ -13,19 +14,16 @@ exports.postJob = async (req, res) => {
       type,
       description,
       salaryRange,
-      postedBy: req.user.id
+      postedBy: req.user.id,
     });
 
     await newJob.save();
-
-    // 👇 ADD 100 POINTS LOGIC (Job Poster) 👇
     await User.findByIdAndUpdate(req.user.id, { $inc: { points: 100 } });
 
     res.status(201).json(newJob);
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -39,7 +37,7 @@ exports.getAllJobs = async (req, res) => {
     res.json(jobs);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -48,39 +46,49 @@ exports.applyForJob = async (req, res) => {
   try {
     const jobId = req.params.id;
     const userId = req.user.id;
-    
-    // Receive Cover Letter from Frontend
-    const { coverLetter } = req.body; 
+    const { coverLetter } = req.body;
 
-    // Optional: Restrict Teachers
     if (req.user.role === 'teacher') {
-       return res.status(403).json({ message: "Teachers cannot apply for jobs." });
+      return res.status(403).json({ message: 'Teachers cannot apply for jobs.' });
     }
 
     const job = await Job.findById(jobId);
-    if (!job) return res.status(404).json({ message: "Job not found" });
-
-    // Check if already applied
-    const alreadyApplied = job.applicants.find(app => app.user.toString() === userId);
-    if (alreadyApplied) {
-      return res.status(400).json({ message: "You have already applied for this job" });
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
     }
 
-    // Save User + Cover Letter
-    job.applicants.push({ 
-      user: userId, 
-      coverLetter: coverLetter 
-    });
-    
-    await job.save();
+    const alreadyApplied = job.applicants.find((app) => app.user.toString() === userId);
+    if (alreadyApplied) {
+      return res.status(400).json({ message: 'You have already applied for this job' });
+    }
 
-    // 👇 ADD 20 POINTS LOGIC (Applicant) 👇
+    job.applicants.push({
+      user: userId,
+      coverLetter,
+    });
+
+    await job.save();
     await User.findByIdAndUpdate(userId, { $inc: { points: 20 } });
 
-    res.json({ message: "Applied successfully (+20 Points)" });
+    const applicant = await User.findById(userId).select('name');
+    await createNotification({
+      io: req.app.get('io'),
+      recipient: job.postedBy,
+      sender: userId,
+      type: 'job_update',
+      title: 'New job applicant',
+      message: `${applicant?.name || 'A user'} applied for ${job.title}.`,
+      link: '/jobs',
+      metadata: {
+        jobId: job._id.toString(),
+        applicantId: userId,
+      },
+    });
+
+    res.json({ message: 'Applied successfully (+20 Points)' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -88,21 +96,21 @@ exports.applyForJob = async (req, res) => {
 exports.deleteJob = async (req, res) => {
   try {
     const jobId = req.params.id;
-    
-    const job = await Job.findById(jobId);
-    if (!job) return res.status(404).json({ message: "Job not found" });
 
-    // Security Check: Only owner can delete
-    if (job.postedBy.toString() !== req.user.id) {
-      return res.status(401).json({ message: "Not authorized to delete this job" });
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
     }
 
-    await job.deleteOne(); 
-    
-    res.json({ message: "Job deleted successfully" });
+    if (job.postedBy.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized to delete this job' });
+    }
+
+    await job.deleteOne();
+    res.json({ message: 'Job deleted successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -114,19 +122,20 @@ exports.getJobApplicants = async (req, res) => {
 
     const job = await Job.findById(jobId).populate({
       path: 'applicants.user',
-      select: 'name email avatar_url batch'
+      select: 'name email avatar_url batch',
     });
 
-    if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
 
-    // Security Check: Sirf Owner dekh sakta hai
     if (job.postedBy.toString() !== userId) {
-      return res.status(401).json({ message: "Not authorized" });
+      return res.status(401).json({ message: 'Not authorized' });
     }
 
     res.json(job.applicants);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: 'Server Error' });
   }
 };

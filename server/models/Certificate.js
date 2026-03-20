@@ -26,6 +26,9 @@ const certificateSchema = new mongoose.Schema({
   file_url: {
     type: String, // File path ya URL store karega
     required: true
+  },
+  file_public_id: {
+    type: String
   }
 }, { timestamps: true });
 

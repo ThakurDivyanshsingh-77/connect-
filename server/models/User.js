@@ -23,10 +23,13 @@ const userSchema = new mongoose.Schema({
   bio: { type: String },
   
   avatar_url: { type: String }, // User Profile Photo
+  avatar_public_id: { type: String },
+
   field_of_study: { type: String }, // e.g., "BCA", "B.Tech"
 
   // Verification System
   idCardUrl: { type: String }, // Image URL for ID
+  idCard_public_id: { type: String },
   isVerified: { type: Boolean, default: false }, // Login access control
   verificationStatus: {
     type: String,

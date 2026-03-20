@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 export const TeacherDashboard = () => {
-  const { profile, user } = useAuth();
+  const { user } = useAuth();
   const { events } = useEvents();
   const { users } = useNetwork();
 
@@ -76,7 +76,7 @@ export const TeacherDashboard = () => {
             <Badge variant="teacher" className="text-sm font-medium">Teacher Dashboard</Badge>
           </div>
           <h1 className="text-3xl font-bold mb-2">
-            Welcome, {profile?.full_name?.split(" ")[0]}! 📚
+            Welcome, {user?.name?.split(" ")[0] || "User"}! 📚
           </h1>
           <p className="text-black/70 max-w-xl">
             Create impactful events, connect with students and alumni, and help build a thriving academic community.

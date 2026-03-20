@@ -3,86 +3,147 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-const http = require('http'); // 1. Import HTTP
-const { Server } = require('socket.io'); // 2. Import Socket.io
+const http = require('http');
+const { Server } = require('socket.io');
 
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const userRoutes = require('./routes/users');
 const connectionRoutes = require('./routes/connections');
 const messageRoutes = require('./routes/messages');
+const notificationRoutes = require('./routes/notifications');
+const mentorshipRoutes = require('./routes/mentorships');
 const jobRoutes = require('./routes/jobs');
 const eventRoutes = require('./routes/events');
-const app = express();
+const roomRoutes = require('./routes/rooms');
+const { processEventReminders } = require('./utils/notificationService');
 
-// 3. Create HTTP Server
+const app = express();
 const server = http.createServer(app);
 
-// 4. Initialize Socket.io
+const defaultOrigins = ['http://localhost:8080', 'http://127.0.0.1:8080'];
+const envOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const allowedOrigins = envOrigins.length ? envOrigins : defaultOrigins;
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+};
+
 const io = new Server(server, {
   cors: {
-    origin: "https://connect-alpha-green.vercel.app", // Frontend URL
-    methods: ["GET", "POST"]
-  }
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
 });
 
-app.use(cors({
-  origin: "https://connect-alpha-green.vercel.app",
-  credentials: true
-}));
-
+app.set('io', io);
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Database Connection
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://rajsingh71143_db_user:attendance123@cluster0.opzmrwd.mongodb.net/alumni_portal?appName=Cluster0";
-mongoose.connect(MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected Successfully"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/alumni_connect';
 
-// Routes
+mongoose
+  .connect(MONGO_URI)
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch((err) => console.error('MongoDB connection error:', err));
+
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/connections', connectionRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/mentorships', mentorshipRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/events', eventRoutes);
-// --- 5. SOCKET.IO LOGIC ---
-io.on("connection", (socket) => {
-  console.log("🔌 User Connected:", socket.id);
+app.use('/api/rooms', roomRoutes);
 
-  // User joins their own room (Room Name = User ID)
-  socket.on("setup", (userData) => {
-    socket.join(userData.id);
-    console.log("👤 User Joined Room:", userData.id);
-    socket.emit("connected");
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('setup', (userData) => {
+    const roomId = userData?.id || userData?._id;
+    if (!roomId) return;
+
+    socket.join(roomId);
+    console.log('User joined room:', roomId);
+    socket.emit('connected');
   });
 
-  // User joins a chat room (Optional, but good for group chats)
-  socket.on("join chat", (room) => {
+  socket.on('join chat', (room) => {
     socket.join(room);
   });
 
-  // Sending Message
-  socket.on("new message", (newMessageRecieved) => {
-    var chat = newMessageRecieved;
-    var recipientId = chat.recipient;
+  socket.on('new message', (newMessageReceived) => {
+    const recipientId = typeof newMessageReceived?.recipient === 'object'
+      ? newMessageReceived.recipient?._id
+      : newMessageReceived?.recipient;
 
-    if (!recipientId) return console.log("Recipient not defined");
+    if (!recipientId) {
+      console.log('Recipient not defined');
+      return;
+    }
 
-    // Send message to the recipient's room
-    // Logic: Emit to the room matching the Recipient's User ID
-    socket.in(recipientId).emit("message received", newMessageRecieved);
+    socket.in(recipientId).emit('message received', newMessageReceived);
   });
 
-  socket.on("disconnect", () => {
-    console.log("User Disconnected");
+  // 👇 Community Rooms Chat Events 👇
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    console.log(`User ${socket.id} joined room ${roomId}`);
+  });
+
+  socket.on('leaveRoom', (roomId) => {
+    socket.leave(roomId);
+    console.log(`User ${socket.id} left room ${roomId}`);
+  });
+
+  socket.on('sendMessage', (messageData) => {
+    const { roomId } = messageData;
+    if (roomId) {
+      socket.in(roomId).emit('receiveMessage', messageData);
+    }
+  });
+
+  socket.on('typing', (data) => {
+    const { roomId, userId, isTyping } = data;
+    if (roomId) {
+      socket.in(roomId).emit('typing', { userId, isTyping });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
   });
 });
 
 const PORT = process.env.PORT || 5000;
-// Change app.listen to server.listen
+
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Allowed frontend origins: ${allowedOrigins.join(', ')}`);
+});
+
+const reminderIntervalMs = Number(process.env.EVENT_REMINDER_INTERVAL_MS || 60000);
+
+setInterval(() => {
+  processEventReminders(io).catch((error) => {
+    console.error('Event reminder processing error:', error);
+  });
+}, reminderIntervalMs).unref();
+
+processEventReminders(io).catch((error) => {
+  console.error('Initial event reminder processing error:', error);
 });

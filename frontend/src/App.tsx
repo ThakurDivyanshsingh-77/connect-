@@ -21,6 +21,9 @@ import Settings from "./pages/Settings";
 import UserProfile from "./pages/UserProfile";
 import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
+import Mentorship from "./pages/Mentorship";
+import Community from "./pages/Community";
+import RoomChat from "./pages/RoomChat";
 
 // New Public Pages
 import About from "./pages/About";
@@ -85,6 +88,24 @@ const App = () => (
 
             <Route path="/user/:userId" element={<UserProfile />} />
             <Route path="/messages" element={<Messages />} />
+            <Route path="/community" element={
+              <ProtectedRoute>
+                <Community />
+              </ProtectedRoute>
+            } />
+            <Route path="/community/:roomId" element={
+              <ProtectedRoute>
+                <RoomChat />
+              </ProtectedRoute>
+            } />
+            <Route
+              path="/mentorship"
+              element={
+                <ProtectedRoute allowedRoles={["teacher", "junior"]}>
+                  <Mentorship />
+                </ProtectedRoute>
+              }
+            />
 
             {/* --- ADMIN ROUTES --- */}
             <Route 

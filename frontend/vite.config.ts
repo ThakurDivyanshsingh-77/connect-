@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       "/api": {
-        target: "https://connect-alpha-green.vercel.app",
+        target: "http://localhost:5000",
         changeOrigin: true,
         secure: false,
       },

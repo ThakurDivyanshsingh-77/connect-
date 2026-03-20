@@ -62,7 +62,7 @@ export function CertificatesManager({ userId, isVerified }: CertificatesManagerP
   // Helper for Image URL
   const getFileUrl = (path: string) => {
     if (!path) return "";
-    return path.startsWith("http") ? path : `${API_URL}/${path.replace(/\\/g, "/")}`;
+    return path;
   };
 
   const fetchCertificates = async () => {

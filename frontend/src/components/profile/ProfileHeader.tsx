@@ -39,7 +39,7 @@ export function ProfileHeader({ profile, role, isVerified, onAvatarUpdate }: Pro
 
   const getAvatar = (path?: string) => {
     if (!path) return undefined;
-    return path.startsWith("http") ? path : `${API_URL}/${path.replace(/\\/g, "/")}`;
+    return path;
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

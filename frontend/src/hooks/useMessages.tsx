@@ -2,11 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "./useAuth";
 import { useToast } from "@/hooks/use-toast";
-import io, { Socket } from "socket.io-client";
 import { API_URL } from "@/utils/config";
-
-// Socket ko component ke bahar rakhein (Singleton)
-var socket: Socket;
+import { getSocket } from "@/lib/socket";
 
 export interface Message {
   _id: string;
@@ -43,11 +40,13 @@ export function useMessages(partnerId?: string) {
   useEffect(() => {
     if (!userId) return;
 
-    if (!socket) {
-      socket = io(API_URL);
-      socket.emit("setup", { _id: userId });
-      socket.on("connected", () => console.log("Socket Connected"));
-    }
+    const socket = getSocket(userId);
+    const handleConnected = () => console.log("Socket Connected");
+    socket.on("connected", handleConnected);
+
+    return () => {
+      socket.off("connected", handleConnected);
+    };
   }, [userId]);
 
   // 2. Fetch Inbox
@@ -75,7 +74,9 @@ export function useMessages(partnerId?: string) {
       });
       setMessages(res.data);
       
-      if (socket) socket.emit("join chat", partnerId);
+      // Use a namespaced room to avoid colliding with userId rooms
+      // (userId rooms are used for notifications and direct message delivery)
+      getSocket(userId).emit("join chat", `chat:${partnerId}`);
     } catch (error) {
       console.error("Error messages:", error);
     } finally {
@@ -85,7 +86,9 @@ export function useMessages(partnerId?: string) {
 
   // 4. Listen for Messages (FULLY FIXED LOGIC)
   useEffect(() => {
-    if (!socket) return;
+    if (!userId) return;
+
+    const socket = getSocket(userId);
 
     const handleMessageReceived = (newMessage: Message) => {
       // 👇 Step 1: Sender ID nikalo (Object hai to ._id, nahi to direct string)
@@ -116,7 +119,7 @@ export function useMessages(partnerId?: string) {
     return () => {
       socket.off("message received", handleMessageReceived);
     };
-  }, [partnerId, fetchConversations]); 
+  }, [userId, partnerId, fetchConversations]); 
 
   // 5. Send Message
   const sendMessage = async (content: string, attachment?: { url: string; type: string }) => {
@@ -136,7 +139,7 @@ export function useMessages(partnerId?: string) {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (socket) socket.emit("new message", data);
+      getSocket(userId).emit("new message", data);
 
       setMessages((prev) => [...prev, data]);
       fetchConversations();

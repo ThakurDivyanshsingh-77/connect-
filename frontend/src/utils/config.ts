@@ -1,8 +1,8 @@
 // client/src/utils/config.ts
 
-// Backend Base URL (ENV first, fallback hardcoded)
+// Backend Base URL (ENV first, localhost fallback for local development)
 export const API_URL =
-  import.meta.env.VITE_API_URL || "https://connect-315o.onrender.com";
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 // Helper to resolve image/file URLs
 export const getImageUrl = (path?: string | null) => {

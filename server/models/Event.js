@@ -6,7 +6,8 @@ const eventSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   time: { type: String, required: true },
   location: { type: String, required: true },
-  image: { type: String, default: "" }, // relative path to uploaded cover image
+  image: { type: String, default: "" }, // cloudinary secure_url
+  image_public_id: { type: String, default: "" }, 
   // ADDED THIS
   max_participants: { type: Number, default: null }, 
   type: {
@@ -21,7 +22,8 @@ const eventSchema = new mongoose.Schema({
   },
   attendees: [{
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    registeredAt: { type: Date, default: Date.now }
+    registeredAt: { type: Date, default: Date.now },
+    reminderSentAt: { type: Date, default: null }
   }]
 }, { timestamps: true });
 

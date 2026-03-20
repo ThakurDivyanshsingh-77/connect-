@@ -19,7 +19,7 @@ export default function VerificationQueue() {
   // Helper for Image URL
   const getFileUrl = (path: string) => {
     if (!path) return "";
-    return path.startsWith("http") ? path : `${API_URL}/${path.replace(/\\/g, "/")}`;
+    return path;
   };
 
   // 1. Fetch Pending Users

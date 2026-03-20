@@ -32,7 +32,7 @@ export const useLeaderboard = () => {
         const getAvatar = (path?: string) => {
           if (!path) return undefined;
           const cleanPath = path.replace(/\\/g, "/");
-          return cleanPath.startsWith("http") ? cleanPath : `${API_URL}/${cleanPath}`;
+          return cleanPath;
         };
 
         // Data Transformation (Backend -> UI)
@@ -52,9 +52,9 @@ export const useLeaderboard = () => {
           .filter((u: any) => u.role === 'student' || u.role === 'junior')
           .map((u: any, i: number) => ({ ...u, rank: i + 1 }));
 
-        // Filter Seniors (Alumni/Teachers)
+        // Filter Seniors (Alumni only)
         const seniors = allUsers
-          .filter((u: any) => u.role === 'alumni' || u.role === 'senior' || u.role === 'teacher')
+          .filter((u: any) => u.role === 'alumni' || u.role === 'senior')
           .map((u: any, i: number) => ({ ...u, rank: i + 1 }));
 
         setJuniorLeaderboard(juniors);

@@ -53,9 +53,7 @@ export const EventCard = ({
 
   // Helper to get Image URL
   const getImageUrl = (path: string) => {
-    if (!path) return null;
-    const cleanPath = path.replace(/\\/g, "/"); 
-    return `${API_URL}/${cleanPath}`;
+    return path || null;
   };
 
   const eventType = event.type ? event.type.charAt(0).toUpperCase() + event.type.slice(1) : "Event";

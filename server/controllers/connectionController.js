@@ -1,5 +1,6 @@
 const Connection = require('../models/Connection');
 const User = require('../models/User'); // 1. User Model Import kiya
+const { createNotification } = require('../utils/notificationService');
 
 // 1. Send Connection Request
 exports.sendRequest = async (req, res) => {
@@ -37,6 +38,22 @@ exports.sendRequest = async (req, res) => {
     });
 
     await newConnection.save();
+
+    const requester = await User.findById(requesterId).select('name');
+    await createNotification({
+      io: req.app.get('io'),
+      recipient: recipientId,
+      sender: requesterId,
+      type: 'connection_request',
+      title: 'New connection request',
+      message: `${requester?.name || 'Someone'} wants to connect with you.`,
+      link: '/network',
+      metadata: {
+        connectionId: newConnection._id.toString(),
+        requesterId,
+      },
+    });
+
     res.json({ message: "Request Sent Successfully", connection: newConnection });
 
   } catch (error) {
@@ -98,6 +115,20 @@ exports.updateStatus = async (req, res) => {
         
         // 2. Jisne request bheji (Requester)
         await User.findByIdAndUpdate(connection.requester, { $inc: { points: 10 } });
+
+        const recipientUser = await User.findById(connection.recipient).select('name');
+        await createNotification({
+          io: req.app.get('io'),
+          recipient: connection.requester,
+          sender: connection.recipient,
+          type: 'connection_request',
+          title: 'Connection request accepted',
+          message: `${recipientUser?.name || 'A user'} accepted your connection request.`,
+          link: '/network',
+          metadata: {
+            connectionId: connection._id.toString(),
+          },
+        });
     }
     // ---------------------------------
 

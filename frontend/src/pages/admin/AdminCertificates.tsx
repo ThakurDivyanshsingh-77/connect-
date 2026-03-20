@@ -14,7 +14,7 @@ export default function AdminCertificates() {
 
   const getFileUrl = (path: string) => {
     if (!path) return "";
-    return path.startsWith("http") ? path : `${API_URL}/${path.replace(/\\/g, "/")}`;
+    return path;
   };
 
   const fetchCertificates = async () => {

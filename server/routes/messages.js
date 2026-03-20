@@ -34,7 +34,7 @@ router.post('/upload', authMiddleware, (req, res, next) => {
     }
     const filePath = req.file.path.replace(/\\/g, "/");
     console.log("✅ File saved at:", filePath);
-    res.json({ url: filePath, type: req.file.mimetype });
+    res.json({ url: filePath, public_id: req.file.filename, type: req.file.mimetype });
 });
 
 // 2. Send Message
@@ -45,5 +45,13 @@ router.get('/conversations', authMiddleware, messageController.getConversations)
 
 // 4. History
 router.get('/:userId', authMiddleware, messageController.getMessages);
+
+// 5. Room Messages
+router.get('/room/:roomId', authMiddleware, messageController.getRoomMessages);
+router.post('/room/:roomId', authMiddleware, messageController.sendRoomMessage);
+
+// 6. Message Actions (Reactions & Pins)
+router.put('/:messageId/pin', authMiddleware, messageController.togglePinMessage);
+router.put('/:messageId/react', authMiddleware, messageController.toggleReaction);
 
 module.exports = router;

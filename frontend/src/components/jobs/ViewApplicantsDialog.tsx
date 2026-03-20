@@ -54,7 +54,7 @@ export function ViewApplicantsDialog({ jobId }: { jobId: string }) {
 
   const getAvatarUrl = (url: string | undefined) => {
     if (!url) return undefined;
-    return url.startsWith("http") ? url : `${API_URL}/${url}`;
+    return url;
   };
 
   return (

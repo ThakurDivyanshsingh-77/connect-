@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Loader2 } from "lucide-react";
 import { useMessages } from "@/hooks/useMessages";
 import { useAuth } from "@/hooks/useAuth";
+import { getImageUrl } from "@/utils/config";
 import { format } from "date-fns";
 
 interface ChatDialogProps {
@@ -73,7 +74,7 @@ export function ChatDialog({
             <Avatar className="h-9 w-9 border border-border">
               {/* FIXED: Handle Localhost Image URL */}
               <AvatarImage 
-                src={partnerAvatar ? (partnerAvatar.startsWith('http') ? partnerAvatar : `https://connect-315o.onrender.com/${partnerAvatar}`) : undefined} 
+                src={getImageUrl(partnerAvatar)} 
               />
               <AvatarFallback className="bg-primary/10 text-primary">
                 {partnerName?.charAt(0).toUpperCase()}
