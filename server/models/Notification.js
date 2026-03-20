@@ -23,6 +23,8 @@ const notificationSchema = new mongoose.Schema({
       'mentorship_request',
       'mentorship_approved',
       'mentorship_rejected',
+      'room_message',
+      'room_announcement'
     ],
     required: true,
     index: true,
