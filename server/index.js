@@ -21,7 +21,7 @@ const { processEventReminders } = require('./utils/notificationService');
 const app = express();
 const server = http.createServer(app);
 
-const defaultOrigins = ['http://localhost:8080', 'http://127.0.0.1:8080'];
+const defaultOrigins = ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:5173', 'https://connect-alpha-green.vercel.app'];
 const envOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
   .split(',')
   .map((origin) => origin.trim())
