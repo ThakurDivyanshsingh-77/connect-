@@ -157,7 +157,46 @@ exports.sendRoomMessage = async (req, res) => {
     const senderId = req.user.id;
     const newMessage = new Message({ sender: senderId, roomId, content, attachment, messageType: messageType || 'text' });
     await newMessage.save();
+    
     const populatedMessage = await Message.findById(newMessage._id).populate('sender', 'name avatar_url role');
+    
+    // Broadcast notifications to room members
+    const Room = require('../models/Room');
+    const room = await Room.findById(roomId);
+
+    if (room && room.members) {
+      const io = req.app.get('io');
+      const isAnnouncement = messageType === 'announcement';
+      const notifType = isAnnouncement ? 'room_announcement' : 'room_message';
+      const title = isAnnouncement 
+         ? `📢 Announcement in ${room.name}` 
+         : `New message in ${room.name}`;
+      
+      let previewText = content?.trim() 
+         ? content.trim().slice(0, 60) 
+         : 'New attachment posted';
+         
+      if (previewText.length === 60) previewText += '...';
+
+      const membersToNotify = room.members.filter(m => m.toString() !== senderId.toString());
+      
+      for (const memberId of membersToNotify) {
+        await createNotification({
+          io,
+          recipient: memberId,
+          sender: senderId,
+          type: notifType,
+          title,
+          message: previewText,
+          link: `/community/${roomId}`,
+          metadata: {
+            roomId: roomId.toString(),
+            messageId: newMessage._id.toString()
+          }
+        });
+      }
+    }
+
     res.status(201).json(populatedMessage);
   } catch (error) {
     console.error(error);

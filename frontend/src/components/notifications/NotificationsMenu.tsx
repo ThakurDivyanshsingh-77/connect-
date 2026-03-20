@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
-import { Bell, Briefcase, Calendar, CheckCircle2, GraduationCap, Loader2, MessageCircle, ShieldCheck, UserPlus } from "lucide-react";
+import { Bell, Briefcase, Calendar, CheckCircle2, GraduationCap, Loader2, MessageCircle, ShieldCheck, UserPlus, Megaphone } from "lucide-react";
 import { useNotifications, type NotificationItem } from "@/hooks/useNotifications";
 import { getImageUrl } from "@/utils/config";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,16 @@ const typeConfig: Record<NotificationItem["type"], { icon: typeof MessageCircle;
     icon: GraduationCap,
     label: "Mentorship",
     iconClass: "text-rose-500",
+  },
+  room_message: {
+    icon: MessageCircle,
+    label: "Room",
+    iconClass: "text-emerald-500",
+  },
+  room_announcement: {
+    icon: Megaphone,
+    label: "Announcement",
+    iconClass: "text-amber-500",
   },
 };
 

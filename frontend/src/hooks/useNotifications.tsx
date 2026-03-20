@@ -14,7 +14,9 @@ export interface NotificationItem {
     | "verification_status"
     | "mentorship_request"
     | "mentorship_approved"
-    | "mentorship_rejected";
+    | "mentorship_rejected"
+    | "room_message"
+    | "room_announcement";
   title: string;
   message: string;
   link: string;
