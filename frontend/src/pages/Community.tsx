@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { CreateRoomModal } from "@/components/community/CreateRoomModal";
 
@@ -81,95 +81,155 @@ export default function Community() {
   });
 
   const canCreateRoom = role === "teacher" || role === "admin" || role === "senior";
+  const userId = user?.id || (user as any)?._id;
+  const joinedRoomCount = rooms.filter((room) => room.members.includes(userId)).length;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="flex-1 container pt-24 pb-8 max-w-6xl">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Community Rooms</h1>
-          <p className="text-muted-foreground mt-1">Join discussions, mentorship groups, and specific subject channels.</p>
-        </div>
-        {canCreateRoom && (
-          <Button onClick={() => setIsModalOpen(true)} className="gap-2">
-            <PlusCircle className="h-4 w-4" /> Create Room
-          </Button>
-        )}
-      </div>
+      <main className="flex-1 px-4 pb-8 pt-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
+          <section className="rounded-3xl border bg-card/60 p-5 shadow-sm backdrop-blur-sm sm:p-6 lg:p-8">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Community Rooms</h1>
+                <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
+                  Join discussions, mentorship groups, class communities, and event channels without losing readability on smaller screens.
+                </p>
+              </div>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
-          <TabsList>
-            <TabsTrigger value="all">All Rooms</TabsTrigger>
-            <TabsTrigger value="my">My Rooms</TabsTrigger>
-            <TabsTrigger value="teacher">Classes</TabsTrigger>
-            <TabsTrigger value="event">Events</TabsTrigger>
-            <TabsTrigger value="senior">Mentorship</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        
-        <div className="relative w-full md:w-72">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search rooms..." 
-            className="pl-9"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredRooms.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-muted-foreground">
-            No rooms found matching your criteria.
-          </div>
-        ) : (
-          filteredRooms.map(room => (
-            <Card key={room._id} className="flex flex-col transition-all hover:shadow-md">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <Badge variant={room.type === 'admin' ? 'destructive' : 'secondary'} className="mb-2 capitalize">
-                    {room.type}
-                  </Badge>
-                  {room.isPrivate && <Badge variant="outline">Private</Badge>}
-                </div>
-                <CardTitle className="text-xl line-clamp-1">{room.name}</CardTitle>
-                <CardDescription className="line-clamp-2 min-h-10">
-                  {room.description || "No description provided."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col justify-end">
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" /> {room.members.length} members
-                  </div>
-                </div>
-                <Button 
-                  className="w-full" 
-                  variant={room.members.includes(user?.id || (user as any)?._id) ? "secondary" : "default"}
-                  onClick={() => handleJoin(room._id)}
-                >
-                  {room.members.includes(user?.id || (user as any)?._id) ? (
-                    <><MessagesSquare className="mr-2 h-4 w-4" /> Open Chat</>
-                  ) : (
-                    "Join Room"
-                  )}
+              {canCreateRoom && (
+                <Button onClick={() => setIsModalOpen(true)} className="w-full gap-2 sm:w-auto">
+                  <PlusCircle className="h-4 w-4" />
+                  Create Room
                 </Button>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+              )}
+            </div>
 
-      {isModalOpen && (
-        <CreateRoomModal 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)} 
-          onSuccess={fetchRooms} 
-        />
-      )}
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <Card className="rounded-2xl border-dashed">
+                <CardContent className="p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Total Rooms</p>
+                  <p className="mt-2 text-2xl font-semibold">{rooms.length}</p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl border-dashed">
+                <CardContent className="p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">My Rooms</p>
+                  <p className="mt-2 text-2xl font-semibold">{joinedRoomCount}</p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl border-dashed">
+                <CardContent className="p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Visible Now</p>
+                  <p className="mt-2 text-2xl font-semibold">{filteredRooms.length}</p>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+
+          <section className="rounded-3xl border bg-card/40 p-3 shadow-sm sm:p-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="min-w-0">
+                <div className="overflow-x-auto pb-2">
+                  <TabsList className="h-auto min-w-max flex-nowrap justify-start gap-1 rounded-xl p-1">
+                    <TabsTrigger value="all" className="px-3 py-2 text-xs sm:px-4 sm:text-sm">All Rooms</TabsTrigger>
+                    <TabsTrigger value="my" className="px-3 py-2 text-xs sm:px-4 sm:text-sm">My Rooms</TabsTrigger>
+                    <TabsTrigger value="teacher" className="px-3 py-2 text-xs sm:px-4 sm:text-sm">Classes</TabsTrigger>
+                    <TabsTrigger value="event" className="px-3 py-2 text-xs sm:px-4 sm:text-sm">Events</TabsTrigger>
+                    <TabsTrigger value="senior" className="px-3 py-2 text-xs sm:px-4 sm:text-sm">Mentorship</TabsTrigger>
+                  </TabsList>
+                </div>
+              </Tabs>
+              
+              <div className="relative w-full lg:w-80">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search rooms..."
+                  className="h-11 rounded-xl pl-9"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredRooms.length === 0 ? (
+              <Card className="col-span-full rounded-3xl border-dashed">
+                <CardContent className="flex flex-col items-center justify-center px-6 py-14 text-center">
+                  <Users className="mb-4 h-10 w-10 text-muted-foreground/70" />
+                  <h2 className="text-xl font-semibold">No rooms found</h2>
+                  <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                    Try changing the tab or search term. We could not find any rooms matching your current filters.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              filteredRooms.map((room) => {
+                const isJoined = room.members.includes(userId);
+
+                return (
+                  <Card
+                    key={room._id}
+                    className="flex h-full flex-col overflow-hidden rounded-3xl border bg-card/70 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <CardHeader className="space-y-3 pb-4">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <Badge variant={room.type === "admin" ? "destructive" : "secondary"} className="capitalize">
+                          {room.type}
+                        </Badge>
+                        {room.isPrivate && <Badge variant="outline">Private</Badge>}
+                      </div>
+
+                      <div className="space-y-2">
+                        <CardTitle className="line-clamp-2 text-lg sm:text-xl">{room.name}</CardTitle>
+                        <CardDescription className="min-h-[60px] line-clamp-3 text-sm sm:min-h-[72px]">
+                          {room.description || "No description provided."}
+                        </CardDescription>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="mt-auto flex flex-1 flex-col justify-end">
+                      <div className="mb-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          {room.members.length} members
+                        </div>
+                        <Badge variant="outline" className="max-w-full truncate">
+                          by {room.createdBy?.name || "Unknown"}
+                        </Badge>
+                      </div>
+
+                      <Button
+                        className="w-full rounded-xl"
+                        variant={isJoined ? "secondary" : "default"}
+                        onClick={() => handleJoin(room._id)}
+                      >
+                        {isJoined ? (
+                          <>
+                            <MessagesSquare className="mr-2 h-4 w-4" />
+                            Open Chat
+                          </>
+                        ) : (
+                          "Join Room"
+                        )}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
+          </section>
+
+          {isModalOpen && (
+            <CreateRoomModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onSuccess={fetchRooms}
+            />
+          )}
+        </div>
       </main>
       <Footer />
     </div>

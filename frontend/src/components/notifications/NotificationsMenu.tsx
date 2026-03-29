@@ -117,8 +117,12 @@ export function NotificationsMenu() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-[380px] p-0">
-        <div className="flex items-center justify-between px-4 py-3">
+      <DropdownMenuContent
+        align="end"
+        sideOffset={10}
+        className="w-[calc(100vw-1rem)] max-w-[380px] p-0 sm:w-[380px]"
+      >
+        <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <DropdownMenuLabel className="p-0 text-sm font-semibold">
             Notifications
           </DropdownMenuLabel>
@@ -157,7 +161,7 @@ export function NotificationsMenu() {
               return (
                 <DropdownMenuItem
                   key={notification._id}
-                  className="cursor-pointer items-start gap-3 px-4 py-3 focus:bg-secondary"
+                  className="cursor-pointer items-start gap-3 px-3 py-3 sm:px-4 focus:bg-secondary"
                   onSelect={(event) => {
                     event.preventDefault();
                     void handleOpenNotification(notification);
@@ -175,7 +179,7 @@ export function NotificationsMenu() {
 
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex items-start justify-between gap-2">
-                      <p className={`line-clamp-1 text-sm ${notification.isRead ? "font-medium" : "font-semibold"}`}>
+                      <p className={`line-clamp-2 pr-1 text-sm ${notification.isRead ? "font-medium" : "font-semibold"}`}>
                         {notification.title}
                       </p>
                       {!notification.isRead && (
@@ -183,11 +187,11 @@ export function NotificationsMenu() {
                       )}
                     </div>
 
-                    <p className="line-clamp-2 text-xs text-muted-foreground">
+                    <p className="line-clamp-3 text-xs text-muted-foreground sm:line-clamp-2">
                       {notification.message}
                     </p>
 
-                    <div className="mt-2 flex items-center justify-between">
+                    <div className="mt-2 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-between">
                       <Badge variant="outline" className="h-5 text-[10px]">
                         {config.label}
                       </Badge>

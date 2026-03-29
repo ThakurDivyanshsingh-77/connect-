@@ -57,7 +57,7 @@ export function CreateRoomModal({ isOpen, onClose, onSuccess }: Props) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create Community Room</DialogTitle>
         </DialogHeader>
@@ -90,16 +90,16 @@ export function CreateRoomModal({ isOpen, onClose, onSuccess }: Props) {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center justify-between mt-4 border rounded-lg p-3">
-            <div className="space-y-0.5">
+          <div className="mt-4 flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-0.5 pr-2">
               <Label className="text-sm font-medium">Private Room</Label>
               <p className="text-xs text-muted-foreground">Only invited users can join this room.</p>
             </div>
             <Switch checked={isPrivate} onCheckedChange={setIsPrivate} />
           </div>
-          <div className="flex justify-end gap-3 pt-4 border-t mt-4">
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={isLoading}>{isLoading ? "Creating..." : "Create Room"}</Button>
+          <div className="mt-4 flex flex-col-reverse gap-3 border-t pt-4 sm:flex-row sm:justify-end">
+            <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">Cancel</Button>
+            <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">{isLoading ? "Creating..." : "Create Room"}</Button>
           </div>
         </form>
       </DialogContent>
