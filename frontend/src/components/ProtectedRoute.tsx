@@ -1,9 +1,9 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   requireVerified?: boolean;
   allowedRoles?: ("junior" | "senior" | "teacher" | "admin")[];
 }
@@ -13,7 +13,7 @@ export function ProtectedRoute({
   requireVerified = false,
   allowedRoles 
 }: ProtectedRouteProps) {
-  const { user, role, isVerified, isLoading } = useAuth();
+  const { user, role, isPendingApproval, isLoading } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -28,13 +28,13 @@ export function ProtectedRoute({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requireVerified && !isVerified) {
-    return <Navigate to="/pending-verification" replace />;
+  if (requireVerified && isPendingApproval) {
+    return <Navigate to="/pending-verification" state={{ from: location }} replace />;
   }
 
   if (allowedRoles && role && !allowedRoles.includes(role)) {
     return <Navigate to="/" replace />;
   }
 
-  return <>{children}</>;
+  return children ? <>{children}</> : <Outlet />;
 }

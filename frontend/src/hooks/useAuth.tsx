@@ -21,6 +21,7 @@ interface AuthContextType {
   isLoading: boolean;       // Profile.tsx uses this
   role: string | null;      // EventCard.tsx uses this
   isVerified: boolean;      // PendingVerification.tsx uses this
+  isPendingApproval: boolean;
   
   // State Setters
   login: (token: string, userData: any) => void; // Login.tsx uses this
@@ -115,6 +116,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // --- 4. Derived Properties ---
   const role = user?.role || null;
   const isVerified = user?.isVerified || false;
+  const isPendingApproval =
+    !!user && (role === "junior" || role === "teacher") && !isVerified;
 
   return (
     <AuthContext.Provider value={{
@@ -122,6 +125,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isLoading,
         role,
         isVerified,
+        isPendingApproval,
         login,
         logout,
         signOut: logout, // ✅ Alias: signOut call karne par logout chalega

@@ -1,17 +1,13 @@
 const mongoose = require('mongoose');
-
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  
   // Role System
   role: { 
     type: String, 
     enum: ['junior', 'senior', 'teacher', 'admin'], 
-    default: 'junior' 
-  },
-
+    default: 'junior'  },
   // Profile Details
   headline: { type: String }, // e.g., "Full Stack Developer | BCA Student"
   designation: { type: String }, // e.g., "Software Engineer"
@@ -21,12 +17,9 @@ const userSchema = new mongoose.Schema({
   website: { type: String }, // Personal portfolio link
   skills: [String], // Array of skills
   bio: { type: String },
-  
   avatar_url: { type: String }, // User Profile Photo
   avatar_public_id: { type: String },
-
   field_of_study: { type: String }, // e.g., "BCA", "B.Tech"
-
   // Verification System
   idCardUrl: { type: String }, // Image URL for ID
   idCard_public_id: { type: String },
@@ -34,26 +27,15 @@ const userSchema = new mongoose.Schema({
   verificationStatus: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
-    default: 'pending'
-  },
-
+    default: 'pending'},
   // Leaderboard Points
   points: { type: Number, default: 0 },
-
-  // 👇 --- NEW SETTINGS FIELD ADDED --- 👇
   settings: {
     emailNotifications: {
       type: Boolean,
-      default: true
-    },
+      default: true},
     profileVisibility: {
       type: String,
       enum: ['public', 'private'],
-      default: 'public'
-    }
-  }
-  // -------------------------------------
-
-}, { timestamps: true });
-
+      default: 'public'} }}, { timestamps: true });
 module.exports = mongoose.model('User', userSchema);

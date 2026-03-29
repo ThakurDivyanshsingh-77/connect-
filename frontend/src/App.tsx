@@ -58,7 +58,14 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/pending-verification" element={<PendingVerification />} />
+            <Route
+              path="/pending-verification"
+              element={
+                <ProtectedRoute>
+                  <PendingVerification />
+                </ProtectedRoute>
+              }
+            />
             
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
@@ -70,38 +77,94 @@ const App = () => (
             <Route path="/cookies" element={<CookiePolicy />} />
 
             {/* --- USER PROTECTED ROUTES --- */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/network" element={<Network />} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute requireVerified>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/network"
+              element={
+                <ProtectedRoute requireVerified>
+                  <Network />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/jobs"
+              element={
+                <ProtectedRoute requireVerified>
+                  <Jobs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <ProtectedRoute requireVerified>
+                  <Events />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute requireVerified>
+                  <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute requireVerified>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
             
             <Route 
               path="/settings" 
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requireVerified>
                   <Settings />
                 </ProtectedRoute>
               } 
             />
 
-            <Route path="/user/:userId" element={<UserProfile />} />
-            <Route path="/messages" element={<Messages />} />
+            <Route
+              path="/user/:userId"
+              element={
+                <ProtectedRoute requireVerified>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute requireVerified>
+                  <Messages />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/community" element={
-              <ProtectedRoute>
+              <ProtectedRoute requireVerified>
                 <Community />
               </ProtectedRoute>
             } />
             <Route path="/community/:roomId" element={
-              <ProtectedRoute>
+              <ProtectedRoute requireVerified>
                 <RoomChat />
               </ProtectedRoute>
             } />
             <Route
               path="/mentorship"
               element={
-                <ProtectedRoute allowedRoles={["teacher", "junior"]}>
+                <ProtectedRoute requireVerified allowedRoles={["teacher", "junior"]}>
                   <Mentorship />
                 </ProtectedRoute>
               }

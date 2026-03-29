@@ -10,6 +10,7 @@ import {
   GraduationCap, 
   Menu, 
   X, 
+  Clock3,
   LogIn, 
   LogOut, 
   User, 
@@ -49,6 +50,11 @@ const authNavLinks = [
   { name: "Events", path: "/events" },
   { name: "Community", path: "/community" },
   { name: "Leaderboard", path: "/leaderboard" },
+];
+
+const restrictedNavLinks = [
+  { name: "Home", path: "/" },
+  { name: "Approval Pending", path: "/pending-verification" },
 ];
 
 const MessagesLink = ({ isMobile = false, onClick }: { isMobile?: boolean; onClick?: () => void }) => {
@@ -116,10 +122,14 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   
-  const { user, role, isVerified, signOut } = useAuth();
+  const { user, role, isVerified, isPendingApproval, signOut } = useAuth();
   
   // ✅ Check if User is Admin
   const isAdmin = role === "admin";
+  const navLinks = user
+    ? (isPendingApproval ? restrictedNavLinks : authNavLinks)
+    : publicNavLinks;
+  const showFullUserAccess = !!user && !isPendingApproval;
 
   const getInitials = (name: string) => {
     return name
@@ -152,7 +162,7 @@ export function Navbar() {
           {/* 2. Desktop Navigation (HIDDEN IF ADMIN) */}
           {!isAdmin && (
             <div className="hidden md:flex items-center gap-1">
-              {(user ? authNavLinks : publicNavLinks).map((link) => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
@@ -165,7 +175,7 @@ export function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              {user && (role === "teacher" || role === "junior") && (
+              {showFullUserAccess && (role === "teacher" || role === "junior") && (
                 <Link
                   to="/mentorship"
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
@@ -178,12 +188,12 @@ export function Navbar() {
                   Mentorship
                 </Link>
               )}
-              <MessagesLink />
+              {showFullUserAccess && <MessagesLink />}
             </div>
           )}
 
           <div className="flex items-center gap-2">
-            {user && <NotificationsMenu />}
+            {showFullUserAccess && <NotificationsMenu />}
 
             {/* 3. Auth Section */}
             <div className="hidden md:flex items-center gap-3">
@@ -228,6 +238,13 @@ export function Navbar() {
                           <Link to="/admin" className="cursor-pointer">
                             <Shield className="w-4 h-4 mr-2" />
                             Admin Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                      ) : isPendingApproval ? (
+                        <DropdownMenuItem asChild>
+                          <Link to="/pending-verification" className="cursor-pointer">
+                            <Clock3 className="w-4 h-4 mr-2" />
+                            Approval Pending
                           </Link>
                         </DropdownMenuItem>
                       ) : (
@@ -302,7 +319,7 @@ export function Navbar() {
           className="md:hidden bg-card border-b border-border"
         >
           <div className="px-4 py-4 space-y-2">
-            {(user ? authNavLinks : publicNavLinks).map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -316,7 +333,7 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
-            {user && (role === "teacher" || role === "junior") && (
+            {showFullUserAccess && (role === "teacher" || role === "junior") && (
               <Link
                 to="/mentorship"
                 onClick={() => setIsOpen(false)}
@@ -332,7 +349,7 @@ export function Navbar() {
                 </div>
               </Link>
             )}
-            <MessagesLink isMobile onClick={() => setIsOpen(false)} />
+            {showFullUserAccess && <MessagesLink isMobile onClick={() => setIsOpen(false)} />}
             <div className="pt-4 flex flex-col gap-2">
               {user ? (
                 <>
@@ -345,15 +362,22 @@ export function Navbar() {
                     </Avatar>
                     <div className="flex flex-col gap-1">
                       <p className="font-medium">{user.name}</p>
-                      {/* Fixed Type Error Here Too */}
-                      {role && (
-                        <RoleBadge role={role as UserRole} showIcon />
+                      {isPendingApproval ? (
+                        <Badge variant="pending" className="w-fit">Pending Verification</Badge>
+                      ) : (
+                        role && <RoleBadge role={role as UserRole} showIcon />
                       )}
                     </div>
                   </div>
-                  <Button variant="outline" asChild className="w-full" onClick={() => setIsOpen(false)}>
-                    <Link to="/profile">Profile</Link>
-                  </Button>
+                  {isPendingApproval ? (
+                    <Button variant="outline" asChild className="w-full" onClick={() => setIsOpen(false)}>
+                      <Link to="/pending-verification">Approval Pending</Link>
+                    </Button>
+                  ) : (
+                    <Button variant="outline" asChild className="w-full" onClick={() => setIsOpen(false)}>
+                      <Link to="/profile">Profile</Link>
+                    </Button>
+                  )}
                   <Button variant="ghost" onClick={() => { signOut(); setIsOpen(false); }} className="w-full text-destructive">
                     Sign Out
                   </Button>

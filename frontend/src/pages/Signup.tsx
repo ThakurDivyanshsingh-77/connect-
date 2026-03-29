@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/layout/Navbar";
+import { useAuth } from "@/hooks/useAuth";
 import {
   GraduationCap,
   Award,
@@ -69,6 +70,7 @@ const Signup = () => {
   });
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -106,9 +108,8 @@ const Signup = () => {
         }
       );
 
-      const { token } = response.data;
-
-      localStorage.setItem("token", token);
+      const { token, user } = response.data;
+      login(token, user);
 
       if (selectedRole === "senior") {
         navigate("/");
