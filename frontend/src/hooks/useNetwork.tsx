@@ -47,16 +47,28 @@ export function useNetwork() {
       const connMap: Record<string, { status: string, id: string }> = {};
       
       myConnections.forEach((conn: any) => {
+        // Safely unwrap IDs from populated docs or raw ObjectIds
+        const requesterId = typeof conn.requester === 'object' && conn.requester !== null
+          ? conn.requester._id
+          : conn.requester;
+        const recipientId = typeof conn.recipient === 'object' && conn.recipient !== null
+          ? conn.recipient._id
+          : conn.recipient;
+
+        if (!requesterId || !recipientId) {
+          console.warn('Skipping malformed connection record', conn);
+          return;
+        }
+
         // Find who is the 'other' person in the connection
-        // Note: Compare with user.id or user._id depending on your auth object
         const myId = user.id || (user as any)._id; 
-        const otherId = conn.requester._id === myId ? conn.recipient._id : conn.requester._id;
+        const otherId = requesterId === myId ? recipientId : requesterId;
         
         let status = 'none';
         if (conn.status === 'accepted') {
           status = 'connected';
         } else if (conn.status === 'pending') {
-          status = conn.requester._id === myId ? 'pending_sent' : 'pending_received';
+          status = requesterId === myId ? 'pending_sent' : 'pending_received';
         }
         
         connMap[otherId] = { status, id: conn._id };
