@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/useAuth";
-import { useJobs } from "@/hooks/useJobs";       
-import { useEvents } from "@/hooks/useEvents";    
-import { useNetwork } from "@/hooks/useNetwork";  
+import { useJobs } from "@/hooks/useJobs";
+import { useEvents } from "@/hooks/useEvents";
+import { useNetwork } from "@/hooks/useNetwork";
 import { Link } from "react-router-dom";
 import {
   Briefcase,
@@ -29,12 +29,12 @@ import {
 
 export const JuniorDashboard = () => {
   const { user } = useAuth();
-  
+
   // --- 1. OLD HOOKS (Cards Data) ---
   const { jobs } = useJobs();
   const { events } = useEvents();
   const { users } = useNetwork();
-  
+
   // Data Counts from Cards (Old Frontend Data)
   const acceptedConnections = users?.filter((u) => u.connectionStatus === "connected") || [];
   const connectionCount = acceptedConnections.length; // e.g., 3
@@ -52,14 +52,14 @@ export const JuniorDashboard = () => {
     const fetchProgress = async () => {
       try {
         const token = localStorage.getItem("token");
-        if(user) {
-            const { data } = await axios.get(`${API_URL}/api/user/stats`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setDbStats({
-                points: data.points,
-                details: data.stats
-            });
+        if (user) {
+          const { data } = await axios.get(`${API_URL}/api/user/stats`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setDbStats({
+            points: data.points,
+            details: data.stats
+          });
         }
       } catch (error) {
         console.error("Progress fetch error", error);
@@ -72,16 +72,16 @@ export const JuniorDashboard = () => {
 
   // --- 3. CORRECT POINTS CALCULATION (As per Leaderboard Image) ---
   // Rules: Event=50, Cert=30, Job=20, Connection=10
-  
-  const frontendPoints = 
-    (connectionCount * 10) + 
-    (eventsCount * 50) +     
-    (jobsCount * 20) +       
+
+  const frontendPoints =
+    (connectionCount * 10) +
+    (eventsCount * 50) +
+    (jobsCount * 20) +
     (dbStats.details.certificates * 30); // Certificates backend se hi aayenge
 
   // Final Points: Jo bhi zyada ho (Backend vs Frontend Logic)
   const displayPoints = Math.max(dbStats.points, frontendPoints);
-  
+
   // Progress Bar Logic
   const nextLevelTarget = Math.ceil((displayPoints + 1) / 100) * 100;
   const progressPercentage = Math.min((displayPoints / nextLevelTarget) * 100, 100);
@@ -125,7 +125,7 @@ export const JuniorDashboard = () => {
 
   if (loading) {
     return (
-       <div className="flex justify-center items-center h-[50vh]">
+      <div className="flex justify-center items-center h-[50vh]">
         <Loader2 className="animate-spin w-10 h-10 text-primary" />
       </div>
     );
@@ -214,7 +214,7 @@ export const JuniorDashboard = () => {
                 {/* Progress Bar */}
                 <Progress value={progressPercentage} className="h-3 bg-secondary" />
               </div>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
                 <div className="text-center p-4 rounded-xl bg-secondary/30">
                   <Award className="w-6 h-6 mx-auto mb-2 text-blue-500" />
@@ -262,15 +262,15 @@ export const JuniorDashboard = () => {
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {jobs && jobs.slice(0, 3).map((job:any) => (
-                  <div key={job.id} className="p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-semibold text-foreground">{job.role}</h4>
-                      <Badge variant="outline">{job.job_type}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{job.company}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{job.location}</p>
+              {jobs && jobs.slice(0, 3).map((job: any) => (
+                <div key={job.id} className="p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold text-foreground">{job.role}</h4>
+                    <Badge variant="outline">{job.job_type}</Badge>
                   </div>
+                  <p className="text-sm text-muted-foreground">{job.company}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{job.location}</p>
+                </div>
               ))}
               {(!jobs || jobs.length === 0) && (
                 <div className="text-center py-8 text-muted-foreground">

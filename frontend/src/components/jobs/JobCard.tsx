@@ -109,10 +109,6 @@ export function JobCard({ job, index, onApply, onDelete, isSubmitting }: JobCard
           {/* Job Meta */}
           <div className="flex flex-wrap gap-4 mb-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Briefcase className="w-4 h-4" />
-              {job.experience}
-            </span>
-            <span className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
               {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
             </span>

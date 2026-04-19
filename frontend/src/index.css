@@ -111,40 +111,88 @@
   /* Enhanced Card Variants with Subtle Shadows */
   .card-elevated {
     @apply bg-card rounded-2xl border border-border shadow-lg;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
   }
 
   .card-elevated:hover {
-    @apply -translate-y-1 border-primary/40;
-    box-shadow: 
-      0 0 20px hsl(var(--primary) / 0.1),
-      0 20px 40px -12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    @apply border-primary/40;
+    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0,0,0,0.08);
   }
 
   .card-glass {
     @apply bg-card/90 backdrop-blur-xl border border-border rounded-2xl;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
   }
 
   .card-glass:hover {
+    transform: translateY(-5px);
     @apply border-primary/30;
-    box-shadow: 
-      0 0 25px hsl(var(--primary) / 0.1),
-      0 8px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.12);
   }
 
   /* Stats Card */
   .stats-card {
     @apply bg-card rounded-2xl border border-border p-6 shadow-sm;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
   }
 
   .stats-card:hover {
+    transform: translateY(-5px);
     @apply border-primary/40;
-    box-shadow: 
-      0 0 15px hsl(var(--primary) / 0.1),
-      0 10px 30px -10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 24px -6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ============================================
+     🔵 JUNIOR (Blue) Card Theme
+  ============================================ */
+  .junior-card {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1px solid #bfdbfe;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .junior-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(59, 130, 246, 0.2);
+    border-color: #93c5fd;
+  }
+
+  /* ============================================
+     🟢 SENIOR (Green) Card Theme
+  ============================================ */
+  .senior-card {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border: 1px solid #a7f3d0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .senior-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(34, 197, 94, 0.2);
+    border-color: #6ee7b7;
+  }
+
+  /* ============================================
+     🟡 TEACHER (Yellow) Card Theme
+  ============================================ */
+  .teacher-card {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1px solid #fde68a;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(250, 204, 21, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .teacher-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(250, 204, 21, 0.25);
+    border-color: #fbbf24;
   }
 
   /* Role Badges */
@@ -291,36 +339,25 @@
     animation: gradientShift 3s ease infinite;
   }
 
-  /* Glow Effects */
+  /* Glow Effects — subtle, professional */
   .glow-primary {
-    box-shadow: 
-      0 0 20px hsl(var(--primary) / 0.4),
-      0 0 40px hsl(var(--primary) / 0.2),
-      0 0 60px hsl(var(--primary) / 0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 12px hsl(var(--primary) / 0.15);
   }
 
   .glow-accent {
-    box-shadow: 
-      0 0 20px hsl(var(--accent) / 0.4),
-      0 0 40px hsl(var(--accent) / 0.2),
-      0 0 60px hsl(var(--accent) / 0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 12px hsl(var(--accent) / 0.15);
   }
 
   .glow-blue {
-    box-shadow: 
-      0 0 15px hsl(217 91% 60% / 0.5),
-      0 0 30px hsl(217 91% 60% / 0.3),
-      0 0 45px hsl(217 91% 60% / 0.15);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
   }
 
   .hover-glow {
-    @apply transition-all duration-400;
+    transition: all 0.3s ease;
   }
 
   .hover-glow:hover {
-    box-shadow: 
-      0 0 20px hsl(var(--primary) / 0.4),
-      0 0 40px hsl(var(--primary) / 0.2);
+    box-shadow: 0 8px 20px hsl(var(--primary) / 0.15);
   }
 
   /* Glassmorphism */

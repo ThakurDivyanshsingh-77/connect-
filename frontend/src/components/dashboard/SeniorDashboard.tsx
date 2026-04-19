@@ -31,7 +31,7 @@ export const SeniorDashboard = () => {
   const acceptedConnections = users?.filter((u) => u.connectionStatus === "connected") || [];
   const pendingRequests = users?.filter((u) => u.connectionStatus === "pending_received") || [];
   const postedJobs = jobs?.filter((j) => j.posted_by === user?.id) || [];
-  
+
   const quickStats = [
     {
       title: "Jobs Posted",
@@ -99,16 +99,15 @@ export const SeniorDashboard = () => {
             transition={{ delay: index * 0.1 }}
           >
             <Link to={stat.link}>
-              <Card className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden">
-                <CardContent className="p-6 relative">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
+              <div className="senior-card cursor-pointer overflow-hidden">
+                <div className="p-6">
                   <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4 shadow-lg`}>
                     <stat.icon className="w-6 h-6 text-white" />
                   </div>
-                  <p className="text-sm text-muted-foreground mb-1">{stat.title}</p>
-                  <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                </CardContent>
-              </Card>
+                  <p className="text-sm text-emerald-600/70 mb-1 font-medium">{stat.title}</p>
+                  <p className="text-3xl font-bold text-emerald-900">{stat.value}</p>
+                </div>
+              </div>
             </Link>
           </motion.div>
         ))}
@@ -122,13 +121,13 @@ export const SeniorDashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="h-full bg-gradient-to-br from-senior/5 to-emerald-500/5 border-senior/20">
-            <CardContent className="p-8 flex flex-col items-center text-center">
+          <div className="senior-card h-full">
+            <div className="p-8 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-senior to-emerald-400 flex items-center justify-center mb-6 shadow-lg">
                 <Building2 className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">Post a Job Opportunity</h3>
-              <p className="text-muted-foreground mb-6">
+              <h3 className="text-xl font-bold text-emerald-900 mb-2">Post a Job Opportunity</h3>
+              <p className="text-emerald-700/70 mb-6">
                 Help students and recent graduates find their dream careers by posting job openings from your company.
               </p>
               <Button className="bg-gradient-to-r from-senior to-emerald-400 hover:opacity-90" asChild>
@@ -137,8 +136,8 @@ export const SeniorDashboard = () => {
                   Post New Job
                 </Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
 
         {/* Mentorship */}
@@ -147,23 +146,23 @@ export const SeniorDashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className="h-full bg-gradient-to-br from-accent/5 to-pink-500/5 border-accent/20">
-            <CardContent className="p-8 flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-pink-400 flex items-center justify-center mb-6 shadow-lg">
+          <div className="senior-card h-full">
+            <div className="p-8 flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-400 flex items-center justify-center mb-6 shadow-lg">
                 <MessageSquare className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">Connect & Mentor</h3>
-              <p className="text-muted-foreground mb-6">
+              <h3 className="text-xl font-bold text-emerald-900 mb-2">Connect & Mentor</h3>
+              <p className="text-emerald-700/70 mb-6">
                 Share your experience and guide students through their academic and professional journey.
               </p>
-              <Button variant="outline" className="border-accent text-accent hover:bg-accent/10" asChild>
+              <Button variant="outline" className="border-emerald-400 text-emerald-700 hover:bg-emerald-50" asChild>
                 <Link to="/messages">
                   <Users className="w-4 h-4 mr-2" />
                   View Messages
                 </Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       </div>
 
@@ -173,31 +172,31 @@ export const SeniorDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+        <div className="senior-card">
+          <div className="flex flex-row items-center justify-between px-6 pt-6 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
                 <Briefcase className="w-5 h-5 text-white" />
               </div>
-              <CardTitle>My Posted Jobs</CardTitle>
+              <h2 className="text-lg font-semibold text-emerald-900">My Posted Jobs</h2>
             </div>
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50" asChild>
               <Link to="/jobs">
                 View All <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
             </Button>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="px-6 pb-6">
             {postedJobs.length > 0 ? (
               <div className="space-y-3">
                 {postedJobs.slice(0, 3).map((job) => (
                   <div
                     key={job.id}
-                    className="p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors flex justify-between items-center"
+                    className="p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 transition-colors flex justify-between items-center border border-emerald-100"
                   >
                     <div>
-                      <h4 className="font-semibold text-foreground">{job.role}</h4>
-                      <p className="text-sm text-muted-foreground">{job.company} • {job.location}</p>
+                      <h4 className="font-semibold text-emerald-900">{job.role}</h4>
+                      <p className="text-sm text-emerald-600/70">{job.company} • {job.location}</p>
                     </div>
                     <Badge variant={job.is_active ? "default" : "secondary"}>
                       {job.is_active ? "Active" : "Closed"}
@@ -206,16 +205,16 @@ export const SeniorDashboard = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-emerald-400">
                 <Briefcase className="w-12 h-12 mx-auto mb-3 opacity-30" />
                 <p>You haven't posted any jobs yet</p>
-                <Button variant="link" className="mt-2" asChild>
+                <Button variant="link" className="mt-2 text-emerald-600" asChild>
                   <Link to="/jobs">Post your first job</Link>
                 </Button>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </motion.div>
 
       {/* Quick Actions */}
@@ -224,44 +223,44 @@ export const SeniorDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
       >
-        <Card>
-          <CardHeader>
+        <div className="senior-card">
+          <div className="px-6 pt-6 pb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-400 flex items-center justify-center">
                 <Star className="w-5 h-5 text-white" />
               </div>
-              <CardTitle>Quick Actions</CardTitle>
+              <h2 className="text-lg font-semibold text-emerald-900">Quick Actions</h2>
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="px-6 pb-6">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" asChild>
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50" asChild>
                 <Link to="/profile">
                   <Award className="w-5 h-5" />
                   <span>Update Profile</span>
                 </Link>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" asChild>
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50" asChild>
                 <Link to="/network">
                   <Users className="w-5 h-5" />
                   <span>View Network</span>
                 </Link>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" asChild>
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50" asChild>
                 <Link to="/events">
                   <Calendar className="w-5 h-5" />
                   <span>Browse Events</span>
                 </Link>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" asChild>
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50" asChild>
                 <Link to="/leaderboard">
                   <TrendingUp className="w-5 h-5" />
                   <span>Leaderboard</span>
                 </Link>
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </motion.div>
     </div>
   );

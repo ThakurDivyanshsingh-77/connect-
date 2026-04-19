@@ -297,12 +297,11 @@ const Network = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
-                    className={`bg-card rounded-xl border p-6 hover:shadow-lg hover:-translate-y-1 hover:scale-105 transition-all duration-300 ${
-                      networkUser.role === 'junior' ? 'border-blue-100 hover:border-blue-300 dark:border-blue-900/30' :
-                      networkUser.role === 'senior' ? 'border-purple-100 hover:border-purple-300 dark:border-purple-900/30' :
-                      networkUser.role === 'teacher' ? 'border-orange-100 hover:border-orange-300 dark:border-orange-900/30' :
-                      networkUser.role === 'admin' ? 'border-red-100 hover:border-red-300 dark:border-red-900/30' :
-                      'border-border'
+                    className={`p-6 ${
+                      networkUser.role === 'junior' ? 'junior-card' :
+                      networkUser.role === 'senior' ? 'senior-card' :
+                      networkUser.role === 'teacher' ? 'teacher-card' :
+                      'card-elevated'
                     }`}
                   >
                     <div className="flex items-start gap-4 mb-4">
@@ -311,19 +310,19 @@ const Network = () => {
                           src={networkUser.avatar_url}
                           alt={networkUser.full_name}
                           className={`w-16 h-16 rounded-full object-cover ring-2 ${
-                            networkUser.role === 'junior' ? 'ring-blue-100' :
-                            networkUser.role === 'senior' ? 'ring-purple-100' :
-                            networkUser.role === 'teacher' ? 'ring-orange-100' :
-                            networkUser.role === 'admin' ? 'ring-red-100' :
+                            networkUser.role === 'junior' ? 'ring-blue-200' :
+                            networkUser.role === 'senior' ? 'ring-emerald-200' :
+                            networkUser.role === 'teacher' ? 'ring-amber-200' :
+                            networkUser.role === 'admin' ? 'ring-red-200' :
                             'ring-border'
                           }`}
                         />
                       ) : (
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white ${
-                          networkUser.role === 'junior' ? 'bg-gradient-to-br from-blue-400 to-blue-600' :
-                          networkUser.role === 'senior' ? 'bg-gradient-to-br from-purple-400 to-purple-600' :
-                          networkUser.role === 'teacher' ? 'bg-gradient-to-br from-orange-400 to-orange-600' :
-                          networkUser.role === 'admin' ? 'bg-gradient-to-br from-red-400 to-red-600' :
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-sm ${
+                          networkUser.role === 'junior' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                          networkUser.role === 'senior' ? 'bg-gradient-to-br from-emerald-500 to-teal-500' :
+                          networkUser.role === 'teacher' ? 'bg-gradient-to-br from-amber-500 to-orange-500' :
+                          networkUser.role === 'admin' ? 'bg-gradient-to-br from-red-500 to-rose-600' :
                           'bg-gradient-to-br from-gray-400 to-gray-600'
                         }`}>
                           {networkUser.full_name.charAt(0)}
@@ -337,7 +336,14 @@ const Network = () => {
                           {networkUser.full_name}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant={networkUser.role === 'junior' ? "secondary" : "outline"} className="capitalize">
+                          <Badge 
+                            variant="outline" 
+                            className={`capitalize ${
+                              networkUser.role === 'junior' ? 'border-blue-200 bg-blue-50 text-blue-700' :
+                              networkUser.role === 'senior' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' :
+                              networkUser.role === 'teacher' ? 'border-amber-200 bg-amber-50 text-amber-700' : ''
+                            }`}
+                          >
                             <RoleIcon className="w-3 h-3 mr-1" />
                             {networkUser.role}
                           </Badge>
@@ -373,7 +379,15 @@ const Network = () => {
                       {networkUser.skills && networkUser.skills.length > 0 ? (
                         <>
                           {networkUser.skills.slice(0, 3).map((skill) => (
-                            <Badge key={skill} variant="outline" className="capitalize text-xs">
+                            <Badge 
+                              key={skill} 
+                              variant="outline" 
+                              className={`capitalize text-xs ${
+                                networkUser.role === 'junior' ? 'border-blue-200 bg-white/50 text-blue-800' :
+                                networkUser.role === 'senior' ? 'border-emerald-200 bg-white/50 text-emerald-800' :
+                                networkUser.role === 'teacher' ? 'border-amber-200 bg-white/50 text-amber-800' : ''
+                              }`}
+                            >
                               {skill}
                             </Badge>
                           ))}

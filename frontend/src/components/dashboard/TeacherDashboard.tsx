@@ -97,16 +97,15 @@ export const TeacherDashboard = () => {
             transition={{ delay: index * 0.1 }}
           >
             <Link to={stat.link}>
-              <Card className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden">
-                <CardContent className="p-6 relative">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity`} />
+              <div className="teacher-card cursor-pointer overflow-hidden">
+                <div className="p-6">
                   <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4 shadow-lg`}>
                     <stat.icon className="w-6 h-6 text-white" />
                   </div>
-                  <p className="text-sm text-muted-foreground mb-1">{stat.title}</p>
-                  <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                </CardContent>
-              </Card>
+                  <p className="text-sm text-amber-600/70 mb-1 font-medium">{stat.title}</p>
+                  <p className="text-3xl font-bold text-amber-900">{stat.value}</p>
+                </div>
+              </div>
             </Link>
           </motion.div>
         ))}
@@ -120,13 +119,13 @@ export const TeacherDashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="h-full bg-gradient-to-br from-teacher/10 to-amber-500/10 border-teacher/30">
-            <CardContent className="p-8 flex flex-col items-center text-center">
+          <div className="teacher-card h-full">
+            <div className="p-8 flex flex-col items-center text-center">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teacher to-amber-400 flex items-center justify-center mb-6 shadow-lg">
-                <Presentation className="w-8 h-8 text-teacher-foreground" />
+                <Presentation className="w-8 h-8 text-amber-900" />
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">Create New Event</h3>
-              <p className="text-muted-foreground mb-6">
+              <h3 className="text-xl font-bold text-amber-900 mb-2">Create New Event</h3>
+              <p className="text-amber-700/70 mb-6">
                 Organize workshops, seminars, guest lectures, and other academic events for students and alumni.
               </p>
               <Button className="bg-gradient-to-r from-teacher to-amber-400 hover:opacity-90 text-teacher-foreground" asChild>
@@ -135,8 +134,8 @@ export const TeacherDashboard = () => {
                   Create Event
                 </Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
 
         {/* Connect */}
@@ -145,23 +144,23 @@ export const TeacherDashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className="h-full bg-gradient-to-br from-emerald-500/5 to-teal-500/5 border-emerald-500/20">
-            <CardContent className="p-8 flex flex-col items-center text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center mb-6 shadow-lg">
+          <div className="teacher-card h-full">
+            <div className="p-8 flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center mb-6 shadow-lg">
                 <MessageSquare className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">Connect & Guide</h3>
-              <p className="text-muted-foreground mb-6">
+              <h3 className="text-xl font-bold text-amber-900 mb-2">Connect & Guide</h3>
+              <p className="text-amber-700/70 mb-6">
                 Mentor students, collaborate with alumni, and foster meaningful academic relationships.
               </p>
-              <Button variant="outline" className="border-emerald-500 text-emerald-600 hover:bg-emerald-500/10" asChild>
+              <Button variant="outline" className="border-amber-400 text-amber-700 hover:bg-amber-50" asChild>
                 <Link to="/network">
                   <Users className="w-4 h-4 mr-2" />
                   View Network
                 </Link>
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       </div>
 
@@ -171,35 +170,35 @@ export const TeacherDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+        <div className="teacher-card">
+          <div className="flex flex-row items-center justify-between px-6 pt-6 pb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-400 flex items-center justify-center">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
-              <CardTitle>My Created Events</CardTitle>
+              <h2 className="text-lg font-semibold text-amber-900">My Created Events</h2>
             </div>
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" className="text-amber-600 hover:bg-amber-50" asChild>
               <Link to="/events">
                 View All <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
             </Button>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="px-6 pb-6">
             {createdEvents.length > 0 ? (
               <div className="space-y-3">
                 {createdEvents.slice(0, 3).map((event) => (
                   <div
                     key={event.id}
-                    className="p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors"
+                    className="p-4 rounded-xl bg-amber-50 hover:bg-amber-100 transition-colors border border-amber-100"
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-semibold text-foreground">{event.title}</h4>
-                      <Badge variant="outline">
+                      <h4 className="font-semibold text-amber-900">{event.title}</h4>
+                      <Badge variant="outline" className="border-amber-200 text-amber-700">
                         {event.max_participants ? `${event.max_participants} max` : "Unlimited"}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-4 text-sm text-amber-600/70">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {new Date(event.event_date).toLocaleDateString()}
@@ -213,16 +212,16 @@ export const TeacherDashboard = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-amber-400">
                 <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
                 <p>You haven't created any events yet</p>
-                <Button variant="link" className="mt-2" asChild>
+                <Button variant="link" className="mt-2 text-amber-600" asChild>
                   <Link to="/events">Create your first event</Link>
                 </Button>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </motion.div>
 
       {/* Upcoming Events */}
@@ -231,28 +230,28 @@ export const TeacherDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
       >
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+        <div className="teacher-card">
+          <div className="flex flex-row items-center justify-between px-6 pt-6 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-400 flex items-center justify-center">
                 <Presentation className="w-5 h-5 text-white" />
               </div>
-              <CardTitle>Upcoming Events</CardTitle>
+              <h2 className="text-lg font-semibold text-amber-900">Upcoming Events</h2>
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="px-6 pb-6">
             {upcomingEvents.length > 0 ? (
               <div className="grid md:grid-cols-3 gap-4">
                 {upcomingEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors"
+                    className="p-4 rounded-xl bg-amber-50 hover:bg-amber-100 transition-colors border border-amber-100"
                   >
-                    <h4 className="font-semibold text-foreground mb-2">{event.title}</h4>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                    <h4 className="font-semibold text-amber-900 mb-2">{event.title}</h4>
+                    <p className="text-sm text-amber-600/70 line-clamp-2 mb-3">
                       {event.description}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2 text-xs text-amber-500">
                       <Clock className="w-3 h-3" />
                       {new Date(event.event_date).toLocaleDateString()}
                     </div>
@@ -260,13 +259,13 @@ export const TeacherDashboard = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-amber-400">
                 <Presentation className="w-12 h-12 mx-auto mb-3 opacity-30" />
                 <p>No upcoming events</p>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </motion.div>
 
       {/* Quick Actions */}
@@ -275,44 +274,44 @@ export const TeacherDashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
       >
-        <Card>
-          <CardHeader>
+        <div className="teacher-card">
+          <div className="px-6 pt-6 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-pink-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-400 flex items-center justify-center">
                 <Award className="w-5 h-5 text-white" />
               </div>
-              <CardTitle>Quick Actions</CardTitle>
+              <h2 className="text-lg font-semibold text-amber-900">Quick Actions</h2>
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="px-6 pb-6">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" asChild>
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 border-amber-200 text-amber-700 hover:bg-amber-50" asChild>
                 <Link to="/profile">
                   <FileText className="w-5 h-5" />
                   <span>Update Profile</span>
                 </Link>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" asChild>
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 border-amber-200 text-amber-700 hover:bg-amber-50" asChild>
                 <Link to="/network">
                   <Users className="w-5 h-5" />
                   <span>View Network</span>
                 </Link>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" asChild>
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 border-amber-200 text-amber-700 hover:bg-amber-50" asChild>
                 <Link to="/messages">
                   <MessageSquare className="w-5 h-5" />
                   <span>Messages</span>
                 </Link>
               </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2" asChild>
+              <Button variant="outline" className="h-auto py-4 flex flex-col gap-2 border-amber-200 text-amber-700 hover:bg-amber-50" asChild>
                 <Link to="/leaderboard">
                   <Award className="w-5 h-5" />
                   <span>Leaderboard</span>
                 </Link>
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </motion.div>
     </div>
   );
