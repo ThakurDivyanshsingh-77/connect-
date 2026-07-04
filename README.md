@@ -219,3 +219,4 @@ alumni-connect/
 ---
 
 > **Note on Legacy Code:** `frontend/src/integrations/supabase` holds deprecated Supabase artifacts. The contemporary stack solely leverages the custom Express MongoDB cluster. Ensure you target `VITE_API_URL` rather than stale Supabase env variables.
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/b8cd22c5-1109-46e3-abd4-f51ac3e18eee" />
