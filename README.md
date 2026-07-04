@@ -10,6 +10,8 @@
 
 AlumniConnect is a robust, dynamic, and fully responsive MERN-stack platform built specifically to bridge the gap between current students, alumni, faculty members, and admins. The application serves as an interactive community for networking, career growth, event management, real-time communication, and mentorship tracking.
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/cab86231-9e2f-4e21-81bb-d207ded7e479" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/da8f8d90-7b9c-4b45-ba2f-e15b245c8113" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/5bc35207-8c9f-4f80-a476-9c584253c263" />
 
 
 ## 📖 Table of Contents
@@ -221,4 +223,4 @@ alumni-connect/
 ---
 
 > **Note on Legacy Code:** `frontend/src/integrations/supabase` holds deprecated Supabase artifacts. The contemporary stack solely leverages the custom Express MongoDB cluster. Ensure you target `VITE_API_URL` rather than stale Supabase env variables.
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/b8cd22c5-1109-46e3-abd4-f51ac3e18eee" />
+ 
