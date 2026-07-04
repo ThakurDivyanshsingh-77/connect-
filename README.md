@@ -96,6 +96,9 @@ Drive engagement via activity-reward points:
 - Applying to a Job (`+20` pts)
 - New Connection (`+10` pts)
 *Separated into Junior & Senior regional leaderboards.*
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/22c192d3-8d61-44bc-b0d3-e86f1644757e" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/79e5f7a0-4258-41fb-9686-c8b7c07f85c8" />
+
 
 ## 🛠 Tech Stack & Architecture
 
@@ -122,6 +125,8 @@ The Node/MongoDB backend revolves around heavily interrelated schemas:
 - `Mentorship` suite: `Mentorship.js`, `MentorshipSession.js`, `MentorshipNote.js` governing coach-trainee workflows.
 - `Notification`: Alert delivery mechanisms.
 - `Certificate`: Proof documents mapped back to User ownership.
+- <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ade9950c-b228-49af-b65f-870e13c62ee5" />
+
 
 ## 📡 API Route Structure
 
