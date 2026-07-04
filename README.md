@@ -125,7 +125,11 @@ The Node/MongoDB backend revolves around heavily interrelated schemas:
 - `Mentorship` suite: `Mentorship.js`, `MentorshipSession.js`, `MentorshipNote.js` governing coach-trainee workflows.
 - `Notification`: Alert delivery mechanisms.
 - `Certificate`: Proof documents mapped back to User ownership.
+- <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/2f599dc1-fa6d-4d3a-9598-b7a61fb34cfa" />
+
 - <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ade9950c-b228-49af-b65f-870e13c62ee5" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/9db0f4be-f634-4b48-9217-82a1d6de4a76" />
+
 
 
 ## 📡 API Route Structure
