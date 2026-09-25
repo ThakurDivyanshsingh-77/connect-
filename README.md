@@ -148,7 +148,7 @@ The Node/MongoDB backend revolves around heavily interrelated schemas:
 
 ## 🔑 Environment Variables
 
-For the application to function locally or in production, define the following variables.
+For the application to function locally or is in production, define the following variables.
 
 ### Backend (`server/.env`)
 ```env
